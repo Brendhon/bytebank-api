@@ -5,8 +5,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-import { resolvers } from './resolvers';
-import { typeDefs } from './schema';
+import { resolvers } from '@/resolvers';
+import { typeDefs } from '@/schema';
 
 // Load environment variables from .env file
 dotenv.config();
