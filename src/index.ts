@@ -2,9 +2,13 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import bodyParser from 'body-parser';
 import cors from 'cors';
+import dotenv from 'dotenv';
 import express from 'express';
 import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
+
+// Load environment variables from .env file
+dotenv.config();
 
 const startServer = async () => {
   // Create an instance of Express
@@ -33,8 +37,11 @@ const startServer = async () => {
     })
   );
 
+  // Set the port from environment variables or default to 4000
+  const port = process.env.PORT || 4000;
+
   // Start the Express server
-  app.listen(3000, () => console.log('🚀 Server ready at http://localhost:3000/graphql'));
+  app.listen(port, () => console.log(`🚀 Server ready at http://localhost:${port}/graphql`));
 };
 
 startServer();
