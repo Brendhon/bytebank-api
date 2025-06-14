@@ -4,11 +4,24 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import mongoose from 'mongoose';
 import { resolvers } from './resolvers';
 import { typeDefs } from './schema';
 
 // Load environment variables from .env file
 dotenv.config();
+
+// MongoDB connection URI
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://mongo:27017/bytebankdb';
+
+mongoose
+  .connect(MONGO_URI)
+  .then(() => {
+    console.log('✅ MongoDB conectado com sucesso!');
+  })
+  .catch((err) => {
+    console.error('❌ Erro ao conectar no MongoDB:', err);
+  });
 
 const startServer = async () => {
   // Create an instance of Express

@@ -16,8 +16,7 @@ Esta API implementa um servidor GraphQL para o Bytebank Pro, onde o front-end es
 * Apollo Server (versão 4) com Express
 * MongoDB (Mongo Atlas para produção, local para desenvolvimento)
 * Docker para containerização
-* Apollo Sandbox para testes
-* Jest + Supertest para testes automatizados
+* Apollo Sandbox para testes e documentação
 
 ---
 
@@ -75,14 +74,9 @@ Você poderá testar suas queries pelo Apollo Sandbox acessando essa URL no nave
 1. Construa a imagem:
 
 ```bash
-docker build -t bytebank-api .
+docker compose up
 ```
-
-2. Execute o container:
-
-```bash
-docker run -p 4000:4000 --env-file .env bytebank-api
-```
+2. Acesse a API em `http://localhost:4000/graphql`.
 
 ---
 
