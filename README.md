@@ -71,7 +71,7 @@ Você poderá testar suas queries pelo Apollo Sandbox acessando essa URL no nave
 
 ### Executando via Docker
 
-1. Construa a imagem:
+1. Construa a imagem Docker e rode os containers com o docker-compose:
 
 ```bash
 docker compose up
