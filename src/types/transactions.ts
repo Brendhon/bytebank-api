@@ -14,6 +14,7 @@ export enum TransactionType {
 // Types
 type TransactionDescKey = keyof typeof TransactionDesc;
 type TransactionTypeKey = keyof typeof TransactionType;
+export type TransactionBreakdown = Record<TransactionDescKey, number>
 
 // Interface for transaction
 export interface ITransaction {
@@ -28,5 +29,5 @@ export interface ITransaction {
 
 export interface TransactionSummary {
   balance: number;
-  breakdown: Record<TransactionDescKey, number>;
+  breakdown: TransactionBreakdown;
 }

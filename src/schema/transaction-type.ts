@@ -1,5 +1,5 @@
 import { Field, ID, InputType, ObjectType, registerEnumType } from 'type-graphql';
-import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
+import { ITransaction, TransactionBreakdown, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
 
 registerEnumType(TransactionDesc, {
   name: 'TransactionDesc',
@@ -93,4 +93,28 @@ export class PaginatedTransactions {
 
   @Field() 
   totalInPage!: number; // Total transactions in the current page
+}
+
+@ObjectType()
+class TransactionSummaryBreakdown implements TransactionBreakdown {
+  @Field()
+  deposit!: number;
+
+  @Field()
+  transfer!: number;
+
+  @Field()
+  withdrawal!: number;
+
+  @Field()
+  payment!: number;
+}
+
+@ObjectType()
+export class TransactionSummary implements TransactionSummary {
+  @Field()
+  balance!: number;
+
+  @Field(() => TransactionSummaryBreakdown)
+  breakdown!: TransactionSummaryBreakdown;
 }

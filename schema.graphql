@@ -39,6 +39,7 @@ type PaginatedTransactions {
 }
 
 type Query {
+  getTransactionSummary: TransactionSummary!
   me: User
   transaction(id: ID!): Transaction
   transactions(limit: Int! = 10, page: Int! = 1): PaginatedTransactions!
@@ -69,6 +70,18 @@ input TransactionInput {
   type: TransactionType!
   user: String
   value: Float!
+}
+
+type TransactionSummary {
+  balance: Float!
+  breakdown: TransactionSummaryBreakdown!
+}
+
+type TransactionSummaryBreakdown {
+  deposit: Float!
+  payment: Float!
+  transfer: Float!
+  withdrawal: Float!
 }
 
 """The type of the transaction (inflow or outflow)"""

@@ -1,8 +1,8 @@
-import { Resolver, Query, Mutation, Arg, ID, Ctx, UseMiddleware, Int } from 'type-graphql';
-import { Transaction, TransactionInput, TransactionUpdateInput, PaginatedTransactions } from '../schema/transaction-type';
+import { Arg, Ctx, ID, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Context, isAuth } from '../middleware';
 import { TransactionModel } from '../models/Transaction';
-import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
-import { isAuth, Context } from '../middleware';
+import { PaginatedTransactions, Transaction, TransactionInput, TransactionSummary, TransactionUpdateInput } from '../schema/transaction-type';
+import { ITransaction, TransactionDesc, TransactionType, TransactionType as TransactionTypeEnum } from '../types/transactions';
 
 @Resolver(Transaction)
 export class TransactionResolver {
@@ -63,10 +63,44 @@ export class TransactionResolver {
     @Ctx() { user }: Context
   ): Promise<Transaction | null> {
     try {
+      // Find the transaction by ID and ensure it belongs to the user
       const transaction = await TransactionModel.findOne({ _id: id, user: user?._id });
+
+      // If no transaction is found, return null
       return transaction ? this.convertToGraphQLType(transaction) : null;
     } catch (error: any) {
       throw new Error(`Failed to fetch transaction: ${error.message}`);
+    }
+  }
+
+  @Query(() => TransactionSummary)
+  @UseMiddleware(isAuth)
+  async getTransactionSummary(@Ctx() { user }: Context): Promise<TransactionSummary> {
+    try {
+      // Fetch all transactions for the user
+      const transactions = await TransactionModel.find({ user: user?._id });
+
+      // Initialize the breakdown object
+      const breakdown = {
+        deposit: 0,
+        transfer: 0,
+        withdrawal: 0,
+        payment: 0
+      };
+
+      // Calculate the balance and update the breakdown
+      const balance = transactions.reduce((acc, t) => {
+        // Update the breakdown based on transaction description
+        breakdown[t.desc as keyof typeof breakdown] += t.value;
+
+        // Calculate the balance based on transaction type
+        return t.type === TransactionType.inflow ? acc + t.value : acc - t.value;
+      }, 0);
+
+      // Return the summary
+      return { balance, breakdown };
+    } catch (error: any) {
+      throw new Error(`Failed to fetch transaction summary: ${error.message}`);
     }
   }
 
