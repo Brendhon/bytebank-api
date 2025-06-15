@@ -1,5 +1,5 @@
 import { Resolver, Query, Mutation, Arg, ID, Ctx, UseMiddleware } from 'type-graphql';
-import { Transaction, TransactionInput } from '../schema/transaction-type';
+import { Transaction, TransactionInput, TransactionUpdateInput } from '../schema/transaction-type';
 import { TransactionModel } from '../models/Transaction';
 import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
 import { isAuth, Context } from '../middleware';
@@ -67,7 +67,7 @@ export class TransactionResolver {
   @UseMiddleware(isAuth)
   async updateTransaction(
     @Arg('id', () => ID) id: string,
-    @Arg('input') input: TransactionInput,
+    @Arg('input') input: TransactionUpdateInput,
     @Ctx() { user }: Context
   ): Promise<Transaction> {
     try {

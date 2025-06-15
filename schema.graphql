@@ -23,7 +23,7 @@ type Mutation {
   deleteTransaction(id: ID!): Boolean!
   login(input: LoginInput!): AuthPayload!
   register(input: UserInput!): AuthPayload!
-  updateTransaction(id: ID!, input: TransactionInput!): Transaction!
+  updateTransaction(id: ID!, input: TransactionUpdateInput!): Transaction!
 }
 
 type Query {
@@ -63,6 +63,14 @@ input TransactionInput {
 enum TransactionType {
   inflow
   outflow
+}
+
+input TransactionUpdateInput {
+  alias: String
+  date: String
+  desc: TransactionDesc
+  type: TransactionType
+  value: Float
 }
 
 type User {

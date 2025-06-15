@@ -1,5 +1,5 @@
 import { Field, ID, InputType, ObjectType, registerEnumType } from 'type-graphql';
-import { TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
+import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
 
 registerEnumType(TransactionDesc, {
   name: 'TransactionDesc',
@@ -12,7 +12,7 @@ registerEnumType(TransactionTypeEnum, {
 });
 
 @ObjectType()
-export class Transaction {
+export class Transaction implements ITransaction {
   @Field(() => ID)
   _id!: string;
 
@@ -36,7 +36,7 @@ export class Transaction {
 }
 
 @InputType()
-export class TransactionInput {
+export class TransactionInput implements ITransaction {
   @Field()
   date!: string;
 
@@ -54,4 +54,22 @@ export class TransactionInput {
 
   @Field({ nullable: true })
   user?: string;
+}
+
+@InputType()
+export class TransactionUpdateInput implements Partial<ITransaction> {
+  @Field({ nullable: true })
+  date?: string;
+
+  @Field({ nullable: true })
+  alias?: string;
+
+  @Field(() => TransactionTypeEnum, { nullable: true })
+  type?: TransactionTypeEnum;
+
+  @Field(() => TransactionDesc, { nullable: true })
+  desc?: TransactionDesc;
+
+  @Field({ nullable: true })
+  value?: number;
 }
