@@ -1,23 +1,23 @@
-# Use uma imagem oficial do Node como base
+# Use an official Node image as the base
 FROM node:22-alpine
 
-# Defina o diretório de trabalho dentro do container
+# Set the working directory inside the container
 WORKDIR /app
 
-# Copie os arquivos package.json e package-lock.json (ou yarn.lock)
+# Copy package.json and package-lock.json (or yarn.lock) files
 COPY package*.json ./
 
-# Instale as dependências
+# Install dependencies
 RUN npm install
 
-# Copie todo o código fonte para o container
+# Copy all source code to the container
 COPY . .
 
-# Compile o TypeScript (assumindo que você tenha script build configurado)
+# Compile TypeScript (assuming you have a build script configured)
 RUN npm run build
 
-# Exponha a porta padrão
+# Expose the default port
 EXPOSE 3000
 
-# Comando para rodar a aplicação
+# Command to run the application
 CMD ["npm", "start"]
