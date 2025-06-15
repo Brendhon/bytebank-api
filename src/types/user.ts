@@ -6,4 +6,5 @@ export interface IUser {
   acceptPrivacy: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  comparePassword(candidatePassword: string): Promise<boolean>;
 }

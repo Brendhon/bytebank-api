@@ -1,7 +1,8 @@
 import { NonEmptyArray } from 'type-graphql';
-import { TransactionResolver } from './transaction.resolver'; 
+import { TransactionResolver } from './transaction.resolver';
+import { UserResolver } from './user.resolver';
 
-// Add more resolvers as needed
 export const resolvers: NonEmptyArray<Function> = [
   TransactionResolver,
+  UserResolver,
 ];

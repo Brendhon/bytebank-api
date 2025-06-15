@@ -50,6 +50,7 @@ npm install
 ```env
 MONGO_URI=mongodb://localhost:27017/bytebankdb
 PORT=4000
+JWT_SECRET=seu_segredo_jwt
 ```
 
 ---

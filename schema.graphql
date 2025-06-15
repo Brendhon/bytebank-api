@@ -3,13 +3,31 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
+"""
+scalar DateTimeISO
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   createTransaction(input: TransactionInput!): Transaction!
   deleteTransaction(id: ID!): Boolean!
+  login(input: LoginInput!): AuthPayload!
+  register(input: UserInput!): AuthPayload!
   updateTransaction(id: ID!, input: TransactionInput!): Transaction!
 }
 
 type Query {
+  me(id: String!): User
   transaction(id: ID!): Transaction
   transactions: [Transaction!]!
 }
@@ -45,4 +63,20 @@ input TransactionInput {
 enum TransactionType {
   inflow
   outflow
+}
+
+type User {
+  _id: ID!
+  acceptPrivacy: Boolean!
+  createdAt: DateTimeISO!
+  email: String!
+  name: String!
+  updatedAt: DateTimeISO!
+}
+
+input UserInput {
+  acceptPrivacy: Boolean!
+  email: String!
+  name: String!
+  password: String!
 }
