@@ -1,7 +1,7 @@
 import { sign } from 'jsonwebtoken';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Context, isAuth } from '../middleware';
-import { UserModel } from '../models';
+import { TransactionModel, UserModel } from '../models';
 import { AuthPayload, LoginInput, User, UserInput, UserUpdateInput } from '../schema';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
@@ -129,6 +129,32 @@ export class UserResolver {
       return this.convertToGraphQLUser(updatedUser);
     } catch (error: any) {
       throw new Error(`Failed to update user: ${error.message}`);
+    }
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async deleteUser(@Ctx() { user }: Context): Promise<boolean> {
+    try {
+      // Get user ID from context
+      const id = user?._id;
+
+      // If no user ID is found, throw an error
+      if (!id) throw new Error('User ID not found in context');
+
+      // Delete all transactions associated with the user
+      await TransactionModel.deleteMany({ user: id });
+
+      // Attempt to find and delete the user
+      const result = await UserModel.findByIdAndDelete(id);
+
+      // If no user was found, throw an error
+      if (!result) throw new Error('User not found');
+
+      // Return true if deletion was successful
+      return true;
+    } catch (error: any) {
+      throw new Error(`Failed to delete user: ${error.message}`);
     }
   }
 }

@@ -21,6 +21,7 @@ input LoginInput {
 type Mutation {
   createTransaction(input: TransactionInput!): Transaction!
   deleteTransaction(id: ID!): Boolean!
+  deleteUser: Boolean!
   login(input: LoginInput!): AuthPayload!
   register(input: UserInput!): AuthPayload!
   updateTransaction(id: ID!, input: TransactionUpdateInput!): Transaction!
