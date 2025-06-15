@@ -1,6 +1,6 @@
 import { sign } from 'jsonwebtoken';
-import { Arg, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { isAuth } from '../middleware';
+import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
+import { Context, isAuth } from '../middleware';
 import { UserModel } from '../models';
 import { AuthPayload, LoginInput, User, UserInput } from '../schema';
 
@@ -35,16 +35,22 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
-  async me(@Arg('id') id: string): Promise<User | null> {
+  async me(@Ctx() { user }: Context): Promise<User | null> {
     try {
+      // Get user by ID from the context
+      const id = user?._id;
+
+      // If no user ID is found, throw an error
+      if (!id) throw new Error('User ID not found in context');
+
       // Fetch user by ID
-      const user = await UserModel.findById(id);
+      const me = await UserModel.findById(id);
 
       // If user not found, return null
-      if (!user) return null;
+      if (!me) return null;
 
       // Convert to GraphQL User type
-      return this.convertToGraphQLUser(user);
+      return this.convertToGraphQLUser(me);
     } catch (error: any) {
       throw new Error(`Failed to fetch user: ${error.message}`);
     }
@@ -76,23 +82,21 @@ export class UserResolver {
     try {
       // Find user by email
       const user = await UserModel.findOne({ email: input.email });
-      if (!user) {
-        throw new Error('Invalid credentials');
-      }
+
+      // If user not found, throw an error
+      if (!user) throw new Error('Invalid credentials');
 
       // Check password
       const isValid = await user.comparePassword(input.password);
-      if (!isValid) {
-        throw new Error('Invalid credentials');
-      }
+
+      // If password is invalid, throw an error
+      if (!isValid) throw new Error('Invalid credentials');
 
       // Generate token
       const token = this.createToken(user._id.toString());
 
-      return {
-        token,
-        user: this.convertToGraphQLUser(user)
-      };
+      // Return token and user
+      return { token, user: this.convertToGraphQLUser(user) };
     } catch (error: any) {
       throw new Error(`Failed to login: ${error.message}`);
     }

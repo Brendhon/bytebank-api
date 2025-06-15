@@ -51,10 +51,7 @@ export class TransactionResolver {
   ): Promise<Transaction> {
     try {
       // Create a new transaction document using the input and add user
-      const newTransaction = await TransactionModel.create({
-        ...input,
-        user: user?._id
-      });
+      const newTransaction = await TransactionModel.create({ ...input, user: user?._id });
 
       // Convert the newly created transaction to GraphQL type
       return this.convertToGraphQLType(newTransaction);
@@ -73,9 +70,9 @@ export class TransactionResolver {
     try {
       // Attempt to find and update the transaction by ID and user
       const transaction = await TransactionModel.findOneAndUpdate(
-        { _id: id, user: user?._id },
-        { $set: input },
-        { new: true, runValidators: true }
+        { _id: id, user: user?._id }, // Ensure the transaction belongs to the user
+        { $set: input }, // Update the fields specified in the input
+        { new: true, runValidators: true } // Return the updated document and run validators
       );
 
       // If no document was found, throw an error
