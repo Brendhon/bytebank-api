@@ -1,19 +1,19 @@
 // Enums
 export enum TransactionDesc {
-  deposit = 'Depósito',
-  transfer = 'Transferência',
-  withdrawal = 'Saque',
-  payment = 'Pagamento',
+  deposit = 'deposit',
+  transfer = 'transfer',
+  withdrawal = 'withdrawal',
+  payment = 'payment',
 }
 
 export enum TransactionType {
-  outflow = 'Saída',
-  inflow = 'Entrada',
+  outflow = 'outflow',
+  inflow = 'inflow',
 }
 
 // Types
-export type TransactionDescKey = keyof typeof TransactionDesc;
-export type TransactionTypeKey = keyof typeof TransactionType;
+type TransactionDescKey = keyof typeof TransactionDesc;
+type TransactionTypeKey = keyof typeof TransactionType;
 
 // Interface for transaction
 export interface ITransaction {
@@ -27,6 +27,6 @@ export interface ITransaction {
 }
 
 export interface TransactionSummary {
-  balance:   number;
+  balance: number;
   breakdown: Record<TransactionDescKey, number>;
 }
