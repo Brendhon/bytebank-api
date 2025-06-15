@@ -8,7 +8,7 @@
 
 Esta API implementa um servidor GraphQL para o Bytebank Pro, onde o front-end está separado em microfrontends (MFEs) com Angular e React. A API é independente, com Docker próprio, podendo ser usada localmente ou em produção.
 
--- [Deploy](https://bytebank-api.onrender.com/graphql) - Serviço hospedado no Render.com
+- [Deploy](https://bytebank-api.onrender.com/graphql) - Serviço hospedado no Render.com
 
 ---
 
