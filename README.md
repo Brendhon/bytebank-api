@@ -111,10 +111,11 @@ Para documentação formal, usaremos o Apollo Sandbox e manteremos o schema Grap
 
 ## 🧰 Scripts disponíveis
 
-| Script        | Descrição                        |
-| ------------- | -------------------------------- |
-| `npm run dev` | Roda API em modo desenvolvimento |
-| `npm start`   | Roda API em modo produção        |
+| Script              | Descrição                                       |
+| ------------------- | ----------------------------------------------- |
+| `npm run dev`       | Roda API em modo desenvolvimento com hot reload |
+| `npm run dev:stop`  | Para o container do MongoDB em desenvolvimento  |
+| `npm start`         | Roda API em modo produção                       |
 
 ---
 

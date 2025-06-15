@@ -1,16 +1,19 @@
-import mongoose, { Schema } from 'mongoose';
+import { Document, model, models, Schema } from 'mongoose';
 import { IUser } from '../types';
 import { comparePassword, hashPassword } from '../utils';
 
-const UserSchema = new Schema<IUser>(
+// Define the interface for the User document 
+type SchemaType = Document & IUser;
+
+const UserSchema = new Schema<SchemaType>(
   {
-    name: { type: String, required: true },
+    name: String,
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     acceptPrivacy: { type: Boolean, required: true },
   },
   {
-    timestamps: true,
+    timestamps: true, // Automatically add createdAt and updatedAt fields
   }
 );
 
@@ -53,4 +56,4 @@ UserSchema.methods.comparePassword = async function (candidatePassword: string):
   }
 };
 
-export const UserModel = mongoose.model<IUser>('User', UserSchema);
+export const UserModel = models.User || model<SchemaType>('User', UserSchema);

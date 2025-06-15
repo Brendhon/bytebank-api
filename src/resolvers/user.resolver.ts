@@ -84,7 +84,7 @@ export class UserResolver {
       const user = await UserModel.findOne({ email: input.email });
 
       // If user not found, throw an error
-      if (!user) throw new Error('Invalid credentials');
+      if (!user) throw new Error('User not found with this email');
 
       // Check password
       const isValid = await user.comparePassword(input.password);
