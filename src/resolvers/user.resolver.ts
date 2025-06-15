@@ -157,4 +157,33 @@ export class UserResolver {
       throw new Error(`Failed to delete user: ${error.message}`);
     }
   }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async validatePassword(
+    @Arg('password') password: string,
+    @Ctx() { user }: Context
+  ): Promise<boolean> {
+    try {
+      // Get user ID from context
+      const id = user?._id;
+
+      // If no user ID is found, throw an error
+      if (!id) throw new Error('User ID not found in context');
+
+      // Find user by ID
+      const foundUser = await UserModel.findById(id);
+
+      // If user not found, throw an error
+      if (!foundUser) throw new Error('User not found');
+
+      // Check password
+      const isValid = await foundUser.comparePassword(password);
+
+      // Return whether the password is valid
+      return isValid;
+    } catch (error: any) {
+      throw new Error(`Failed to validate password: ${error.message}`);
+    }
+  }
 }

@@ -26,6 +26,7 @@ type Mutation {
   register(input: UserInput!): AuthPayload!
   updateTransaction(id: ID!, input: TransactionUpdateInput!): Transaction!
   updateUser(input: UserUpdateInput!): User!
+  validatePassword(password: String!): Boolean!
 }
 
 type Query {
