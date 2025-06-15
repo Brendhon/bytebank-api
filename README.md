@@ -1,4 +1,5 @@
 # 🚀 Bytebank API GraphQL
+[![Render](https://img.shields.io/badge/Render-%46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)](https://bytebank-api.onrender.com/graphql)
 
 > API GraphQL para o projeto Bytebank Pro, backend separado para microfrontends, utilizando Apollo Server com Express e MongoDB.
 
@@ -7,8 +8,6 @@
 ## 📖 Sobre
 
 Esta API implementa um servidor GraphQL para o Bytebank Pro, onde o front-end está separado em microfrontends (MFEs) com Angular e React. A API é independente, com Docker próprio, podendo ser usada localmente ou em produção.
-
-- [Deploy](https://bytebank-api.onrender.com/graphql) - Serviço hospedado no Render.com
 
 ---
 
