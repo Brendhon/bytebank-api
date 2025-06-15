@@ -73,3 +73,24 @@ export class TransactionUpdateInput implements Partial<ITransaction> {
   @Field({ nullable: true })
   value?: number;
 }
+
+@ObjectType()
+export class PaginatedTransactions {
+  @Field(() => [Transaction])
+  items!: Transaction[];
+
+  @Field()
+  total!: number;
+
+  @Field()
+  page!: number;
+
+  @Field()
+  totalPages!: number;
+
+  @Field()
+  hasMore!: boolean;
+
+  @Field() 
+  totalInPage!: number; // Total transactions in the current page
+}

@@ -29,10 +29,19 @@ type Mutation {
   validatePassword(password: String!): Boolean!
 }
 
+type PaginatedTransactions {
+  hasMore: Boolean!
+  items: [Transaction!]!
+  page: Float!
+  total: Float!
+  totalInPage: Float!
+  totalPages: Float!
+}
+
 type Query {
   me: User
   transaction(id: ID!): Transaction
-  transactions: [Transaction!]!
+  transactions(limit: Int! = 10, page: Int! = 1): PaginatedTransactions!
 }
 
 type Transaction {

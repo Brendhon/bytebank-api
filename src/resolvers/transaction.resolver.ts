@@ -1,5 +1,5 @@
-import { Resolver, Query, Mutation, Arg, ID, Ctx, UseMiddleware } from 'type-graphql';
-import { Transaction, TransactionInput, TransactionUpdateInput } from '../schema/transaction-type';
+import { Resolver, Query, Mutation, Arg, ID, Ctx, UseMiddleware, Int } from 'type-graphql';
+import { Transaction, TransactionInput, TransactionUpdateInput, PaginatedTransactions } from '../schema/transaction-type';
 import { TransactionModel } from '../models/Transaction';
 import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
 import { isAuth, Context } from '../middleware';
@@ -18,12 +18,39 @@ export class TransactionResolver {
     };
   }
 
-  @Query(() => [Transaction])
+  @Query(() => PaginatedTransactions)
   @UseMiddleware(isAuth)
-  async transactions(@Ctx() { user }: Context): Promise<Transaction[]> {
+  async transactions(
+    @Ctx() { user }: Context,
+    @Arg('page', () => Int, { defaultValue: 1 }) page: number,
+    @Arg('limit', () => Int, { defaultValue: 10 }) limit: number
+  ): Promise<PaginatedTransactions> {
     try {
-      const transactions = await TransactionModel.find({ user: user?._id }).sort({ date: -1 });
-      return transactions.map(t => this.convertToGraphQLType(t));
+      // Ensure page and limit are positive numbers
+      const validPage = Math.max(1, page);
+      const validLimit = Math.max(1, Math.min(50, limit)); // Max 50 items per page
+      const skip = (validPage - 1) * validLimit;
+
+      // Get total count of transactions for this user
+      const total = await TransactionModel.countDocuments({ user: user?._id });
+
+      // Calculate total pages
+      const totalPages = Math.ceil(total / validLimit);
+
+      // Get paginated transactions
+      const transactions = await TransactionModel.find({ user: user?._id })
+        .sort({ date: -1 })
+        .skip(skip)
+        .limit(validLimit);
+
+      return {
+        items: transactions.map(t => this.convertToGraphQLType(t)),
+        totalInPage: transactions.length,
+        total,
+        page: validPage,
+        totalPages,
+        hasMore: validPage < totalPages
+      };
     } catch (error: any) {
       throw new Error(`Failed to fetch transactions: ${error.message}`);
     }
