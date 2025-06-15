@@ -6,7 +6,6 @@
   "scripts": {
     "dev": "docker-compose up -d mongo && nodemon",
     "dev:stop": "docker-compose stop",
-    "docker": "docker compose up",
     "start": "npm run build && node dist/index.js",
     "build": "tsc",
     "lint": "eslint . --ext .ts",

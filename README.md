@@ -48,53 +48,55 @@ npm install
 3. Configure variáveis de ambiente criando um arquivo `.env` com:
 
 ```env
-MONGO_URI_DEV=mongodb://localhost:27017/bytebank_dev
-MONGO_URI_PROD=<sua-string-do-mongo-atlas>
+MONGO_URI=mongodb://localhost:27017/bytebankdb
 PORT=4000
 ```
 
 ---
 
-### Executando a API localmente
+### Modos de Execução
 
-Para rodar em modo desenvolvimento com hot reload:
+#### 1. Desenvolvimento com Hot Reload (Recomendado para desenvolvimento)
+
+Este modo é ideal para desenvolvimento local, oferecendo hot reload e melhor experiência de debugging:
 
 ```bash
+# Inicia o MongoDB em container e a API com hot reload
 npm run dev
+
+# Para parar o container do MongoDB quando terminar
+npm run dev:stop
 ```
 
-A API estará disponível em `http://localhost:4000/graphql`.
+Neste modo:
+- O MongoDB roda em um container Docker
+- A API roda diretamente na sua máquina com hot reload
+- Alterações no código são refletidas instantaneamente
+- Ideal para desenvolvimento ativo
 
-Você poderá testar suas queries pelo Apollo Sandbox acessando essa URL no navegador.
+#### 2. Execução Completa via Docker
 
----
-
-### Executando via Docker
-
-1. Construa a imagem Docker e rode os containers com o docker-compose:
+Para executar toda a aplicação em containers Docker:
 
 ```bash
+# Constrói e inicia todos os containers
 docker compose up
-```
-2. Acesse a API em `http://localhost:4000/graphql`.
 
----
-
-## 🚀 Como usar
-
-Com a API rodando, acesse o Apollo Sandbox em:
-
-```
-http://localhost:4000/graphql
+# Com rebuild (caso tenha alterações na imagem)
+docker compose up --build
 ```
 
-Exemplo de query para testar:
+**Limitações do modo Docker completo:**
+- Não possui hot reload
+- Alterações no código requerem rebuild da imagem
+- Cache da imagem pode causar problemas se não for feito rebuild
+- Melhor para testes de produção ou CI/CD
 
-```graphql
-query {
-  hello
-}
-```
+Em ambos os casos, a API estará disponível em `http://localhost:4000/graphql`.
+
+**Quando usar cada modo?**
+- Use `npm run dev` durante o desenvolvimento ativo (coding)
+- Use `docker compose up` para testar o ambiente de produção ou quando precisar da stack completa em containers
 
 ---
 
@@ -112,7 +114,6 @@ Para documentação formal, usaremos o Apollo Sandbox e manteremos o schema Grap
 | ------------- | -------------------------------- |
 | `npm run dev` | Roda API em modo desenvolvimento |
 | `npm start`   | Roda API em modo produção        |
-| `npm test`    | Executa testes automatizados     |
 
 ---
 
