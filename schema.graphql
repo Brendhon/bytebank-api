@@ -24,6 +24,7 @@ type Mutation {
   login(input: LoginInput!): AuthPayload!
   register(input: UserInput!): AuthPayload!
   updateTransaction(id: ID!, input: TransactionUpdateInput!): Transaction!
+  updateUser(input: UserUpdateInput!): User!
 }
 
 type Query {
@@ -87,4 +88,11 @@ input UserInput {
   email: String!
   name: String!
   password: String!
+}
+
+input UserUpdateInput {
+  acceptPrivacy: Boolean
+  email: String
+  name: String
+  password: String
 }

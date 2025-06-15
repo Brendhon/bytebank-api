@@ -1,7 +1,10 @@
 import { Field, ID, InputType, ObjectType } from 'type-graphql';
+import { IUser } from '../types';
+
+type Model = Omit<IUser, 'comparePassword'>
 
 @ObjectType()
-export class User {
+export class User implements Omit<Model, 'password'> {
   @Field(() => ID)
   _id!: string;
 
@@ -22,7 +25,7 @@ export class User {
 }
 
 @InputType()
-export class UserInput {
+export class UserInput implements Omit<Model,'_id'> {
   @Field()
   name!: string;
 
@@ -37,7 +40,7 @@ export class UserInput {
 }
 
 @InputType()
-export class LoginInput {
+export class LoginInput implements Pick<IUser, 'email' | 'password'> {
   @Field()
   email!: string;
 
@@ -52,4 +55,19 @@ export class AuthPayload {
 
   @Field(() => User)
   user!: User;
+}
+
+@InputType()
+export class UserUpdateInput implements Partial<Model> {
+  @Field({ nullable: true })
+  name?: string;
+
+  @Field({ nullable: true })
+  email?: string;
+
+  @Field({ nullable: true })
+  password?: string;
+
+  @Field({ nullable: true })
+  acceptPrivacy?: boolean;
 }

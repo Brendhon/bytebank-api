@@ -1,6 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { IUser } from '../types';
-import bcrypt from 'bcryptjs';
+import { comparePassword, hashPassword } from '../utils';
 
 const UserSchema = new Schema<IUser>(
   {
@@ -16,17 +16,9 @@ const UserSchema = new Schema<IUser>(
 
 // Hash password before saving (Mongoose middleware)
 UserSchema.pre('save', async function (next) {
-  // Ensure password is provided
-  if (!this.password) return next(new Error('Password is required'));
-
-  if (!this.isModified('password')) return next(); // Only hash the password if it has been modified (or is new)
-
   try {
-    // Generate a salt and hash the password
-    const salt = await bcrypt.genSalt(10);
-
     // Hash the password using the generated salt
-    this.password = await bcrypt.hash(this.password, salt);
+    this.password = await hashPassword(this.password);
 
     // Proceed to the next middleware
     return next();
@@ -35,10 +27,27 @@ UserSchema.pre('save', async function (next) {
   }
 });
 
+// Has password is modified when updating
+UserSchema.pre('findOneAndUpdate', async function (next) {
+  try {
+    // Get the update object
+    let password = this.get('password');
+
+    // If password is provided, hash it before saving
+    if (password) this.set('password', await hashPassword(password));
+
+    // Proceed to the next middleware
+    return next();
+  } catch (error: any) {
+    console.error('Error hashing password on update:', error);
+    return next(error);
+  }
+});
+
 // Method to check password validity
 UserSchema.methods.comparePassword = async function (candidatePassword: string): Promise<boolean> {
   try {
-    return await bcrypt.compare(candidatePassword, this.password);
+    return await comparePassword(candidatePassword, this.password);
   } catch (error) {
     throw error;
   }

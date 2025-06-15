@@ -2,7 +2,7 @@ import { sign } from 'jsonwebtoken';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Context, isAuth } from '../middleware';
 import { UserModel } from '../models';
-import { AuthPayload, LoginInput, User, UserInput } from '../schema';
+import { AuthPayload, LoginInput, User, UserInput, UserUpdateInput } from '../schema';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -99,6 +99,36 @@ export class UserResolver {
       return { token, user: this.convertToGraphQLUser(user) };
     } catch (error: any) {
       throw new Error(`Failed to login: ${error.message}`);
+    }
+  }
+
+  @Mutation(() => User)
+  @UseMiddleware(isAuth)
+  async updateUser(
+    @Arg('input') input: UserUpdateInput,
+    @Ctx() { user }: Context
+  ): Promise<User> {
+    try {
+      // Get user ID from context
+      const id = user?._id;
+
+      // If no user ID is found, throw an error
+      if (!id) throw new Error('User ID not found in context');
+
+      // Attempt to find and update the user
+      const updatedUser = await UserModel.findByIdAndUpdate(
+        id,
+        { $set: input },
+        { new: true, runValidators: true }
+      );
+
+      // If no user was found, throw an error
+      if (!updatedUser) throw new Error('User not found');
+
+      // Convert and return the updated user
+      return this.convertToGraphQLUser(updatedUser);
+    } catch (error: any) {
+      throw new Error(`Failed to update user: ${error.message}`);
     }
   }
 }
