@@ -25,8 +25,8 @@ Esta API implementa um servidor GraphQL para o Bytebank Pro, onde o front-end es
 ### Pré-requisitos
 
 * Node.js (v22+ recomendado)
-* Docker (opcional para rodar banco e API)
-* MongoDB Atlas (para produção) ou MongoDB local (para desenvolvimento)
+* Docker (para rodar banco e API)
+* MongoDB Atlas (para produção) ou MongoDB local (para desenvolvimento) - É recomendado usar o MongoDB Atlas para produção, mas você pode rodar localmente para desenvolvimento.
 
 ---
 
