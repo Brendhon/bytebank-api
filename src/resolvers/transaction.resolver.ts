@@ -2,7 +2,7 @@ import { Arg, Ctx, ID, Int, Mutation, Query, Resolver, UseMiddleware } from 'typ
 import { Context, isAuth } from '../middleware';
 import { TransactionModel } from '../models/Transaction';
 import { PaginatedTransactions, Transaction, TransactionInput, TransactionSummary, TransactionUpdateInput } from '../schema/transaction-type';
-import { ITransaction, TransactionDesc, TransactionType, TransactionType as TransactionTypeEnum } from '../types/transactions';
+import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
 
 @Resolver(Transaction)
 export class TransactionResolver {
@@ -94,7 +94,7 @@ export class TransactionResolver {
         breakdown[t.desc as keyof typeof breakdown] += t.value;
 
         // Calculate the balance based on transaction type
-        return t.type === TransactionType.inflow ? acc + t.value : acc - t.value;
+        return t.type === TransactionTypeEnum.inflow ? acc + t.value : acc - t.value;
       }, 0);
 
       // Return the summary
