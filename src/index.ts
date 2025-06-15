@@ -21,8 +21,11 @@ const startServer = async () => {
 
     // Build the GraphQL schema using type-graphql
     const schema = await buildSchema({
+      // Specify the resolvers to be used in the schema
       resolvers,
-      emitSchemaFile: true, // Optional: emit the schema to a file (schema.graphql)
+      // Optional: emit the schema to a file (schema.graphql) - only in development
+      // This can be useful for introspection or documentation purposes
+      emitSchemaFile: process.env.NODE_ENV !== 'production' ? 'schema.graphql' : false,
     });
 
     // Create an instance of ApolloServer with schema
