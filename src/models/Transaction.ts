@@ -1,5 +1,5 @@
 import mongoose, { Schema } from 'mongoose';
-import { ITransaction, TransactionDesc, TransactionType } from '@/types';
+import { ITransaction, TransactionDesc, TransactionType } from '../types';
 
 const TransactionSchema = new Schema<ITransaction>({
   date: { type: String, required: true },

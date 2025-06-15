@@ -1,4 +1,5 @@
-import { resolvers } from '@/resolvers';
+import 'reflect-metadata'; // This need to be imported before any other imports that use decorators
+import { resolvers } from './resolvers';
 import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import bodyParser from 'body-parser';
@@ -6,7 +7,6 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import mongoose from 'mongoose';
-import 'reflect-metadata';
 import { buildSchema } from 'type-graphql';
 
 // Load environment variables from .env file
@@ -27,13 +27,11 @@ const startServer = async () => {
   // Build the GraphQL schema using type-graphql
   const schema = await buildSchema({
     resolvers,
-    emitSchemaFile: true, // Opcional: gera um arquivo schema.gql
+    emitSchemaFile: true, // Optional: emit the schema to a file (schema.graphql)
   });
 
   // Create an instance of ApolloServer with schema
-  const server = new ApolloServer({
-    schema,
-  });
+  const server = new ApolloServer({ schema });
 
   // Start the Apollo Server
   await server.start();

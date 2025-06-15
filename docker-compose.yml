@@ -18,7 +18,6 @@ services:
       - MONGO_URI=mongodb://mongo:27017/bytebankdb # MongoDB connection string - Overrides the .env file
     depends_on:
       - mongo
-    command: ["npm", "run", "dev"] # Command to start the server in development mode
 
 volumes:
   mongo-data:
