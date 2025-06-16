@@ -16,10 +16,10 @@ export class Transaction implements ITransaction {
   @Field(() => ID)
   _id!: string;
 
-  @Field()
+  @Field(() => String)
   date!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   alias?: string;
 
   @Field(() => TransactionTypeEnum)
@@ -28,19 +28,19 @@ export class Transaction implements ITransaction {
   @Field(() => TransactionDesc)
   desc!: TransactionDesc;
 
-  @Field()
+  @Field(() => Number)
   value!: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   user?: string;
 }
 
 @InputType()
 export class TransactionInput implements ITransaction {
-  @Field()
+  @Field(() => String)
   date!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   alias?: string;
 
   @Field(() => TransactionTypeEnum)
@@ -49,19 +49,19 @@ export class TransactionInput implements ITransaction {
   @Field(() => TransactionDesc)
   desc!: TransactionDesc;
 
-  @Field()
+  @Field(() => Number)
   value!: number;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   user?: string;
 }
 
 @InputType()
 export class TransactionUpdateInput implements Partial<ITransaction> {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   date?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   alias?: string;
 
   @Field(() => TransactionTypeEnum, { nullable: true })
@@ -70,7 +70,7 @@ export class TransactionUpdateInput implements Partial<ITransaction> {
   @Field(() => TransactionDesc, { nullable: true })
   desc?: TransactionDesc;
 
-  @Field({ nullable: true })
+  @Field(() => Number, { nullable: true })
   value?: number;
 }
 
@@ -79,40 +79,40 @@ export class PaginatedTransactions {
   @Field(() => [Transaction])
   items!: Transaction[];
 
-  @Field()
+  @Field(() => Number)
   total!: number;
 
-  @Field()
+  @Field(() => Number)
   page!: number;
 
-  @Field()
+  @Field(() => Number)
   totalPages!: number;
 
-  @Field()
+  @Field(() => Boolean)
   hasMore!: boolean;
 
-  @Field() 
+  @Field(() => Number)
   totalInPage!: number; // Total transactions in the current page
 }
 
 @ObjectType()
 class TransactionSummaryBreakdown implements TransactionBreakdown {
-  @Field()
+  @Field(() => Number)
   deposit!: number;
 
-  @Field()
+  @Field(() => Number)
   transfer!: number;
 
-  @Field()
+  @Field(() => Number)
   withdrawal!: number;
 
-  @Field()
+  @Field(() => Number)
   payment!: number;
 }
 
 @ObjectType()
 export class TransactionSummary implements TransactionSummary {
-  @Field()
+  @Field(() => Number)
   balance!: number;
 
   @Field(() => TransactionSummaryBreakdown)

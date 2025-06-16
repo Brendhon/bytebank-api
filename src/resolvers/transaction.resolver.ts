@@ -107,7 +107,7 @@ export class TransactionResolver {
   @Mutation(() => Transaction)
   @UseMiddleware(isAuth)
   async createTransaction(
-    @Arg('input') input: TransactionInput,
+    @Arg('input', () => TransactionInput) input: TransactionInput,
     @Ctx() { user }: Context
   ): Promise<Transaction> {
     try {
@@ -125,7 +125,7 @@ export class TransactionResolver {
   @UseMiddleware(isAuth)
   async updateTransaction(
     @Arg('id', () => ID) id: string,
-    @Arg('input') input: TransactionUpdateInput,
+    @Arg('input', () => TransactionUpdateInput) input: TransactionUpdateInput,
     @Ctx() { user }: Context
   ): Promise<Transaction> {
     try {
