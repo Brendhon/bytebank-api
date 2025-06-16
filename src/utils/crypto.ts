@@ -23,13 +23,13 @@ export const comparePassword = async (
  * @returns {Promise<string>} - A promise that resolves to the hashed password.
  */
 export const hashPassword = async (password: string): Promise<string> => {
+  // Ensure password is provided
+  if (!password) throw new Error('Password is required');
+
+  // Validate password length
+  if (password.length < 6) throw new Error('Password must be at least 6 characters long');
+
   try {
-    // Ensure password is provided
-    if (!password) throw new Error('Password is required');
-
-    // Validate password length
-    if (password.length < 6) throw new Error('Password must be at least 6 characters long');
-
     // Generate a salt and hash the password
     const salt = await bcrypt.genSalt(10);
 
