@@ -10,11 +10,7 @@ O projeto está configurado para ser executado com **Docker**, tanto para o banc
 
 ---
 
-## 🚀 Bytebank API GraphQL
-
-Este é o backend do **Bytebank Pro**, uma API GraphQL desenvolvida para suportar uma arquitetura de microfrontends.
-
-### ✨ Funcionalidades
+## ✨ Funcionalidades
 
 - **Autenticação de Usuário**: Registro e login seguros com JWT.
 - **Gerenciamento de Transações**: Operações de CRUD (Criar, Ler, Atualizar, Deletar) para transações financeiras.
@@ -22,27 +18,30 @@ Este é o backend do **Bytebank Pro**, uma API GraphQL desenvolvida para suporta
 - **Paginação**: Suporte para paginação na listagem de transações.
 - **Segurança**: Senhas criptografadas e rotas protegidas por autenticação.
 
-### 🛠️ Tecnologias
+---
+
+## 🛠️ Tecnologias
 
 As seguintes tecnologias foram utilizadas na construção desta API:
 
-- **Node.js**
-- **TypeScript**
-- **GraphQL** com **Apollo Server**
-- **Express.js**
-- **MongoDB** com **Mongoose**
-- **Docker**
-- **TypeGraphQL** para a construção de schemas e resolvers
-- **JWT (JSON Web Token)** para autenticação
-- **Bcrypt.js** para criptografia de senhas
+- [**Node.js**](https://nodejs.org/)
+- [**TypeScript**](https://www.typescriptlang.org/)
+- [**GraphQL**](https://graphql.org/) com [**Apollo Server**](https://www.apollographql.com/docs/apollo-server/)
+- [**Express.js**](https://expressjs.com/)
+- [**MongoDB**](https://www.mongodb.com/) com [**Mongoose**](https://mongoosejs.com/)
+- [**Docker**](https://www.docker.com/)
+- [**TypeGraphQL**](https://typegraphql.com/) para a construção de schemas e resolvers
+- [**JWT (JSON Web Token)**](https://jwt.io/) para autenticação
+- [**Bcrypt.js**](https://github.com/kelektiv/node.bcrypt.js/) para criptografia de senhas
 
-### 📂 Estrutura de Pastas
+---
+
+## 📂 Estrutura de Pastas
 
 A estrutura de pastas do projeto está organizada da seguinte forma:
 
 ```
 /
-├── dist/
 ├── src/
 │   ├── config/
 │   │   └── index.ts
@@ -65,13 +64,14 @@ A estrutura de pastas do projeto está organizada da seguinte forma:
 ├── nodemon.json
 ├── package-lock.json
 ├── package.json
+├── README.md
 ├── vitest.config.ts
 └── tsconfig.json
 ```
 
 ---
 
-### ⚙️ Configuração e Instalação
+## ⚙️ Configuração e Instalação
 
 **Pré-requisitos**:
 
@@ -113,7 +113,9 @@ A estrutura de pastas do projeto está organizada da seguinte forma:
     NODE_ENV=development
     ```
 
-### ▶️ Executando a Aplicação
+---
+
+## ▶️ Executando a Aplicação
 
 **Modo de Desenvolvimento (com Hot Reload):**
 
@@ -146,7 +148,9 @@ docker compose up --build
 
 A API estará disponível em `http://localhost:4000/graphql`.
 
-### 🧰 Principais Scripts Disponíveis
+---
+
+## 🧰 Principais Scripts Disponíveis
 
 - `npm run dev`: Inicia a API em modo de desenvolvimento com hot reload.
 - `npm run dev:stop`: Para o container do MongoDB.
@@ -155,7 +159,9 @@ A API estará disponível em `http://localhost:4000/graphql`.
 - `npm run format`: Formata o código com o Prettier.
 - `npm test`: Executa os testes automatizados.
 
-### 📄 Licença
+---
+
+## 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.
 
