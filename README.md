@@ -61,6 +61,8 @@ A estrutura de pastas do projeto está organizada da seguinte forma:
 ├── .env.example
 ├── .gitignore
 ├── docker-compose.yml
+├── Dockerfile
+├── .prettierignore
 ├── nodemon.json
 ├── package-lock.json
 ├── package.json
