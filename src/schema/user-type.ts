@@ -8,49 +8,49 @@ export class User implements Omit<Model, 'password'> {
   @Field(() => ID)
   _id!: string;
 
-  @Field()
+  @Field(() => String)
   name!: string;
 
-  @Field()
+  @Field(() => String)
   email!: string;
 
-  @Field()
+  @Field(() => Boolean)
   acceptPrivacy!: boolean;
 
-  @Field()
+  @Field(() => Date)
   createdAt!: Date;
 
-  @Field()
+  @Field(() => Date)
   updatedAt!: Date;
 }
 
 @InputType()
 export class UserInput implements Omit<Model,'_id'> {
-  @Field()
+  @Field(() => String)
   name!: string;
 
-  @Field()
+  @Field(() => String)
   email!: string;
 
-  @Field()
+  @Field(() => String)
   password!: string;
 
-  @Field()
+  @Field(() => Boolean)
   acceptPrivacy!: boolean;
 }
 
 @InputType()
 export class LoginInput implements Pick<IUser, 'email' | 'password'> {
-  @Field()
+  @Field(() => String)
   email!: string;
 
-  @Field()
+  @Field(() => String)
   password!: string;
 }
 
 @ObjectType()
 export class AuthPayload {
-  @Field()
+  @Field(() => String)
   token!: string;
 
   @Field(() => User)
@@ -59,15 +59,15 @@ export class AuthPayload {
 
 @InputType()
 export class UserUpdateInput implements Partial<Model> {
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   name?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   email?: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   password?: string;
 
-  @Field({ nullable: true })
+  @Field(() => Boolean, { nullable: true })
   acceptPrivacy?: boolean;
 }

@@ -1,3 +1,4 @@
+import 'reflect-metadata'; // This need to be imported before any other imports that use decorators
 import { sign } from 'jsonwebtoken';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
 import { Context, isAuth } from '../middleware';
@@ -57,7 +58,9 @@ export class UserResolver {
   }
 
   @Mutation(() => AuthPayload)
-  async register(@Arg('input') input: UserInput): Promise<AuthPayload> {
+  async register(
+    @Arg('input', () => UserInput) input: UserInput,
+  ): Promise<AuthPayload> {
     try {
       // Check if user already exists
       const existingUser = await UserModel.findOne({ email: input.email });
@@ -78,7 +81,9 @@ export class UserResolver {
   }
 
   @Mutation(() => AuthPayload)
-  async login(@Arg('input') input: LoginInput): Promise<AuthPayload> {
+  async login(
+    @Arg('input', () => LoginInput) input: LoginInput,
+  ): Promise<AuthPayload> {
     try {
       // Find user by email
       const user = await UserModel.findOne({ email: input.email });
@@ -105,7 +110,7 @@ export class UserResolver {
   @Mutation(() => User)
   @UseMiddleware(isAuth)
   async updateUser(
-    @Arg('input') input: UserUpdateInput,
+    @Arg('input', () => UserUpdateInput) input: UserUpdateInput,
     @Ctx() { user }: Context
   ): Promise<User> {
     try {
@@ -161,7 +166,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async validatePassword(
-    @Arg('password') password: string,
+    @Arg('password', () => String) password: string,
     @Ctx() { user }: Context
   ): Promise<boolean> {
     try {
