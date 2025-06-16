@@ -1,0 +1,4 @@
+# Ignorar o arquivo schema.graphql da formatação do Prettier
+schema.graphql
+node_modules
+dist
