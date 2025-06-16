@@ -1,4 +1,4 @@
-import bcrypt from 'bcryptjs';
+import bcrypt from "bcryptjs";
 
 /**
  * Utility functions for password hashing and comparison.
@@ -8,14 +8,14 @@ import bcrypt from 'bcryptjs';
  */
 export const comparePassword = async (
   candidatePassword: string,
-  hashedPassword: string
+  hashedPassword: string,
 ): Promise<boolean> => {
   try {
     return await bcrypt.compare(candidatePassword, hashedPassword);
   } catch (error) {
-    throw new Error('Error comparing passwords');
+    throw new Error("Error comparing passwords");
   }
-}
+};
 
 /**
  * Hashes a password using bcrypt.
@@ -24,10 +24,11 @@ export const comparePassword = async (
  */
 export const hashPassword = async (password: string): Promise<string> => {
   // Ensure password is provided
-  if (!password) throw new Error('Password is required');
+  if (!password) throw new Error("Password is required");
 
   // Validate password length
-  if (password.length < 6) throw new Error('Password must be at least 6 characters long');
+  if (password.length < 6)
+    throw new Error("Password must be at least 6 characters long");
 
   try {
     // Generate a salt and hash the password
@@ -36,7 +37,7 @@ export const hashPassword = async (password: string): Promise<string> => {
     // Hash the password using the generated salt
     return await bcrypt.hash(password, salt);
   } catch (error) {
-    throw new Error('Error hashing password');
+    throw new Error("Error hashing password");
   }
 };
 
@@ -47,5 +48,5 @@ export const hashPassword = async (password: string): Promise<string> => {
  */
 export const isPasswordModified = (password: string): boolean => {
   // Check if the password is a non-empty string
-  return typeof password === 'string' && password.trim().length > 0;
+  return typeof password === "string" && password.trim().length > 0;
 };

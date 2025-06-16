@@ -1,4 +1,5 @@
 # 🚀 Bytebank API GraphQL
+
 [![Render](https://img.shields.io/badge/Render-%46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)](https://bytebank-api.onrender.com/graphql)
 
 Este é um projeto de API GraphQL para o "Bytebank Pro", um sistema de backend para microfrontends. A API é construída com **Node.js**, **TypeScript**, **Apollo Server**, **Express** e **MongoDB**.
@@ -7,7 +8,7 @@ O sistema oferece funcionalidades de autenticação de usuários, incluindo regi
 
 O projeto está configurado para ser executado com **Docker**, tanto para o banco de dados MongoDB quanto para a própria API, e inclui um modo de desenvolvimento com hot reload para facilitar a codificação.
 
------
+---
 
 ## 🚀 Bytebank API GraphQL
 
@@ -15,25 +16,25 @@ Este é o backend do **Bytebank Pro**, uma API GraphQL desenvolvida para suporta
 
 ### ✨ Funcionalidades
 
-  * **Autenticação de Usuário**: Registro e login seguros com JWT.
-  * **Gerenciamento de Transações**: Operações de CRUD (Criar, Ler, Atualizar, Deletar) para transações financeiras.
-  * **Resumo Financeiro**: Endpoint para obter o saldo atual e um resumo das transações.
-  * **Paginação**: Suporte para paginação na listagem de transações.
-  * **Segurança**: Senhas criptografadas e rotas protegidas por autenticação.
+- **Autenticação de Usuário**: Registro e login seguros com JWT.
+- **Gerenciamento de Transações**: Operações de CRUD (Criar, Ler, Atualizar, Deletar) para transações financeiras.
+- **Resumo Financeiro**: Endpoint para obter o saldo atual e um resumo das transações.
+- **Paginação**: Suporte para paginação na listagem de transações.
+- **Segurança**: Senhas criptografadas e rotas protegidas por autenticação.
 
 ### 🛠️ Tecnologias
 
 As seguintes tecnologias foram utilizadas na construção desta API:
 
-  * **Node.js**
-  * **TypeScript**
-  * **GraphQL** com **Apollo Server**
-  * **Express.js**
-  * **MongoDB** com **Mongoose**
-  * **Docker**
-  * **TypeGraphQL** para a construção de schemas e resolvers
-  * **JWT (JSON Web Token)** para autenticação
-  * **Bcrypt.js** para criptografia de senhas
+- **Node.js**
+- **TypeScript**
+- **GraphQL** com **Apollo Server**
+- **Express.js**
+- **MongoDB** com **Mongoose**
+- **Docker**
+- **TypeGraphQL** para a construção de schemas e resolvers
+- **JWT (JSON Web Token)** para autenticação
+- **Bcrypt.js** para criptografia de senhas
 
 ### 📂 Estrutura de Pastas
 
@@ -68,14 +69,14 @@ A estrutura de pastas do projeto está organizada da seguinte forma:
 └── tsconfig.json
 ```
 
------
+---
 
 ### ⚙️ Configuração e Instalação
 
 **Pré-requisitos**:
 
-  * Node.js (versão \>=18.0.0)
-  * Docker
+- Node.js (versão \>=18.0.0)
+- Docker
 
 **Passo a passo**:
 
@@ -147,23 +148,23 @@ A API estará disponível em `http://localhost:4000/graphql`.
 
 ### 🧰 Principais Scripts Disponíveis
 
-  * `npm run dev`: Inicia a API em modo de desenvolvimento com hot reload.
-  * `npm run dev:stop`: Para o container do MongoDB.
-  * `npm start`: Executa a API em modo de produção (requer compilação prévia).
-  * `npm run build`: Compila o código TypeScript.
-  * `npm run format`: Formata o código com o Prettier.
-  * `npm test`: Executa os testes automatizados.
+- `npm run dev`: Inicia a API em modo de desenvolvimento com hot reload.
+- `npm run dev:stop`: Para o container do MongoDB.
+- `npm start`: Executa a API em modo de produção (requer compilação prévia).
+- `npm run build`: Compila o código TypeScript.
+- `npm run format`: Formata o código com o Prettier.
+- `npm test`: Executa os testes automatizados.
 
 ### 📄 Licença
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.
 
------
+---
 
 ## 👥 Autor
+
 <img style="border-radius: 20%;" src="https://avatars1.githubusercontent.com/u/52840078?s=400&u=67bc81db89b5abf12cf592e0c610426afd3a02f4&v=4" width="120px;" alt="autor"/><br>
 **Brendhon Moreira**
 
 [![Linkedin Badge](https://img.shields.io/badge/-Brendhon-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/brendhon-moreira)](https://www.linkedin.com/in/brendhon-moreira)
 [![Gmail Badge](https://img.shields.io/badge/-brendhon.e.c.m@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:brendhon.e.c.m@gmail.com)](mailto:brendhon.e.c.m@gmail.com)
-

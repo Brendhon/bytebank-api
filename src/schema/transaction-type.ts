@@ -1,14 +1,25 @@
-import { Field, ID, InputType, ObjectType, registerEnumType } from 'type-graphql';
-import { ITransaction, TransactionBreakdown, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
+import {
+  Field,
+  ID,
+  InputType,
+  ObjectType,
+  registerEnumType,
+} from "type-graphql";
+import {
+  ITransaction,
+  TransactionBreakdown,
+  TransactionDesc,
+  TransactionType as TransactionTypeEnum,
+} from "../types/transactions";
 
 registerEnumType(TransactionDesc, {
-  name: 'TransactionDesc',
-  description: 'The description of the transaction',
+  name: "TransactionDesc",
+  description: "The description of the transaction",
 });
 
 registerEnumType(TransactionTypeEnum, {
-  name: 'TransactionType',
-  description: 'The type of the transaction (inflow or outflow)',
+  name: "TransactionType",
+  description: "The type of the transaction (inflow or outflow)",
 });
 
 @ObjectType()

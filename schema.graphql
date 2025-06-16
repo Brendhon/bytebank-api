@@ -55,7 +55,9 @@ type Transaction {
   value: Float!
 }
 
-"""The description of the transaction"""
+"""
+The description of the transaction
+"""
 enum TransactionDesc {
   deposit
   payment
@@ -84,7 +86,9 @@ type TransactionSummaryBreakdown {
   withdrawal: Float!
 }
 
-"""The type of the transaction (inflow or outflow)"""
+"""
+The type of the transaction (inflow or outflow)
+"""
 enum TransactionType {
   inflow
   outflow

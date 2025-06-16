@@ -3,7 +3,7 @@ services:
     image: mongo:6.0
     container_name: mongo-dev
     ports:
-      - '27017:27017'
+      - "27017:27017"
     volumes:
       - mongo-data:/data/db
 
@@ -11,9 +11,9 @@ services:
     build: .
     container_name: bytebank-api
     ports:
-      - '${PORT}:3000'        # Uses the PORT variable from .env to map the port
+      - "${PORT}:3000" # Uses the PORT variable from .env to map the port
     env_file:
-      - .env                  # Loads variables from the .env file
+      - .env # Loads variables from the .env file
     environment:
       - MONGO_URI=mongodb://mongo:27017/bytebankdb # MongoDB connection string - Overrides the .env file
     depends_on:

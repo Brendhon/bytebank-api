@@ -1,10 +1,10 @@
-import { Field, ID, InputType, ObjectType } from 'type-graphql';
-import { IUser } from '../types';
+import { Field, ID, InputType, ObjectType } from "type-graphql";
+import { IUser } from "../types";
 
-type Model = Omit<IUser, 'comparePassword'>
+type Model = Omit<IUser, "comparePassword">;
 
 @ObjectType()
-export class User implements Omit<Model, 'password'> {
+export class User implements Omit<Model, "password"> {
   @Field(() => ID)
   _id!: string;
 
@@ -25,7 +25,7 @@ export class User implements Omit<Model, 'password'> {
 }
 
 @InputType()
-export class UserInput implements Omit<Model,'_id'> {
+export class UserInput implements Omit<Model, "_id"> {
   @Field(() => String)
   name!: string;
 
@@ -40,7 +40,7 @@ export class UserInput implements Omit<Model,'_id'> {
 }
 
 @InputType()
-export class LoginInput implements Pick<IUser, 'email' | 'password'> {
+export class LoginInput implements Pick<IUser, "email" | "password"> {
   @Field(() => String)
   email!: string;
 

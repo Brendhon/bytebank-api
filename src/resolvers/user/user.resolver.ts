@@ -1,11 +1,24 @@
-import 'reflect-metadata'; // This need to be imported before any other imports that use decorators
-import { sign } from 'jsonwebtoken';
-import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { Context, isAuth } from '../../middleware';
-import { TransactionModel, UserModel } from '../../models';
-import { AuthPayload, LoginInput, User, UserInput, UserUpdateInput } from '../../schema';
+import "reflect-metadata"; // This need to be imported before any other imports that use decorators
+import { sign } from "jsonwebtoken";
+import {
+  Arg,
+  Ctx,
+  Mutation,
+  Query,
+  Resolver,
+  UseMiddleware,
+} from "type-graphql";
+import { Context, isAuth } from "../../middleware";
+import { TransactionModel, UserModel } from "../../models";
+import {
+  AuthPayload,
+  LoginInput,
+  User,
+  UserInput,
+  UserUpdateInput,
+} from "../../schema";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 
 @Resolver(User)
 export class UserResolver {
@@ -15,7 +28,7 @@ export class UserResolver {
    * @returns The generated JWT token.
    */
   private createToken(userId: string): string {
-    return sign({ _id: userId }, JWT_SECRET, { expiresIn: '1d' });
+    return sign({ _id: userId }, JWT_SECRET, { expiresIn: "1d" });
   }
 
   /**
@@ -30,7 +43,7 @@ export class UserResolver {
       email: doc.email,
       acceptPrivacy: doc.acceptPrivacy,
       createdAt: doc.createdAt!,
-      updatedAt: doc.updatedAt!
+      updatedAt: doc.updatedAt!,
     };
   }
 
@@ -42,7 +55,7 @@ export class UserResolver {
       const id = user?._id;
 
       // If no user ID is found, throw an error
-      if (!id) throw new Error('User ID not found in context');
+      if (!id) throw new Error("User ID not found in context");
 
       // Fetch user by ID
       const me = await UserModel.findById(id);
@@ -59,14 +72,14 @@ export class UserResolver {
 
   @Mutation(() => AuthPayload)
   async register(
-    @Arg('input', () => UserInput) input: UserInput,
+    @Arg("input", () => UserInput) input: UserInput,
   ): Promise<AuthPayload> {
     try {
       // Check if user already exists
       const existingUser = await UserModel.findOne({ email: input.email });
 
       // If user exists, throw an error
-      if (existingUser) throw new Error('User already exists with this email');
+      if (existingUser) throw new Error("User already exists with this email");
 
       // Create new user
       const user = await UserModel.create(input);
@@ -82,20 +95,20 @@ export class UserResolver {
 
   @Mutation(() => AuthPayload)
   async login(
-    @Arg('input', () => LoginInput) input: LoginInput,
+    @Arg("input", () => LoginInput) input: LoginInput,
   ): Promise<AuthPayload> {
     try {
       // Find user by email
       const user = await UserModel.findOne({ email: input.email });
 
       // If user not found, throw an error
-      if (!user) throw new Error('User not found with this email');
+      if (!user) throw new Error("User not found with this email");
 
       // Check password
       const isValid = await user.comparePassword(input.password);
 
       // If password is invalid, throw an error
-      if (!isValid) throw new Error('Invalid credentials');
+      if (!isValid) throw new Error("Invalid credentials");
 
       // Generate token
       const token = this.createToken(user._id.toString());
@@ -110,25 +123,25 @@ export class UserResolver {
   @Mutation(() => User)
   @UseMiddleware(isAuth)
   async updateUser(
-    @Arg('input', () => UserUpdateInput) input: UserUpdateInput,
-    @Ctx() { user }: Context
+    @Arg("input", () => UserUpdateInput) input: UserUpdateInput,
+    @Ctx() { user }: Context,
   ): Promise<User> {
     try {
       // Get user ID from context
       const id = user?._id;
 
       // If no user ID is found, throw an error
-      if (!id) throw new Error('User ID not found in context');
+      if (!id) throw new Error("User ID not found in context");
 
       // Attempt to find and update the user
       const updatedUser = await UserModel.findByIdAndUpdate(
         id,
         { $set: input },
-        { new: true, runValidators: true }
+        { new: true, runValidators: true },
       );
 
       // If no user was found, throw an error
-      if (!updatedUser) throw new Error('User not found');
+      if (!updatedUser) throw new Error("User not found");
 
       // Convert and return the updated user
       return this.convertToGraphQLUser(updatedUser);
@@ -145,7 +158,7 @@ export class UserResolver {
       const id = user?._id;
 
       // If no user ID is found, throw an error
-      if (!id) throw new Error('User ID not found in context');
+      if (!id) throw new Error("User ID not found in context");
 
       // Delete all transactions associated with the user
       await TransactionModel.deleteMany({ user: id });
@@ -154,7 +167,7 @@ export class UserResolver {
       const result = await UserModel.findByIdAndDelete(id);
 
       // If no user was found, throw an error
-      if (!result) throw new Error('User not found');
+      if (!result) throw new Error("User not found");
 
       // Return true if deletion was successful
       return true;
@@ -166,21 +179,21 @@ export class UserResolver {
   @Mutation(() => Boolean)
   @UseMiddleware(isAuth)
   async validatePassword(
-    @Arg('password', () => String) password: string,
-    @Ctx() { user }: Context
+    @Arg("password", () => String) password: string,
+    @Ctx() { user }: Context,
   ): Promise<boolean> {
     try {
       // Get user ID from context
       const id = user?._id;
 
       // If no user ID is found, throw an error
-      if (!id) throw new Error('User ID not found in context');
+      if (!id) throw new Error("User ID not found in context");
 
       // Find user by ID
       const foundUser = await UserModel.findById(id);
 
       // If user not found, throw an error
-      if (!foundUser) throw new Error('User not found');
+      if (!foundUser) throw new Error("User not found");
 
       // Check password
       const isValid = await foundUser.comparePassword(password);
