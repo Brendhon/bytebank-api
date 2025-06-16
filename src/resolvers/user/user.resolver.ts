@@ -1,9 +1,9 @@
 import 'reflect-metadata'; // This need to be imported before any other imports that use decorators
 import { sign } from 'jsonwebtoken';
 import { Arg, Ctx, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { Context, isAuth } from '../middleware';
-import { TransactionModel, UserModel } from '../models';
-import { AuthPayload, LoginInput, User, UserInput, UserUpdateInput } from '../schema';
+import { Context, isAuth } from '../../middleware';
+import { TransactionModel, UserModel } from '../../models';
+import { AuthPayload, LoginInput, User, UserInput, UserUpdateInput } from '../../schema';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 

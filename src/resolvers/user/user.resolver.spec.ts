@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UserResolver } from './user.resolver';
-import { UserModel, TransactionModel } from '../models';
+import { UserModel, TransactionModel } from '../../models';
 import { sign } from 'jsonwebtoken';
 
 // Mock the jsonwebtoken library to control its behavior in tests

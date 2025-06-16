@@ -1,125 +1,164 @@
 # 🚀 Bytebank API GraphQL
 [![Render](https://img.shields.io/badge/Render-%46E3B7.svg?style=for-the-badge&logo=render&logoColor=white)](https://bytebank-api.onrender.com/graphql)
 
-> API GraphQL para o projeto Bytebank Pro, backend separado para microfrontends, utilizando Apollo Server com Express e MongoDB.
+Este é um projeto de API GraphQL para o "Bytebank Pro", um sistema de backend para microfrontends. A API é construída com **Node.js**, **TypeScript**, **Apollo Server**, **Express** e **MongoDB**.
 
----
+O sistema oferece funcionalidades de autenticação de usuários, incluindo registro e login com senhas criptografadas, e gerenciamento de transações financeiras. Os usuários autenticados podem criar, ler, atualizar e deletar suas próprias transações, além de visualizar um resumo com o saldo e a discriminação dos tipos de transação. A API também inclui paginação para a listagem de transações, garantindo um desempenho eficiente. A autenticação é realizada via JSON Web Tokens (JWT), e as rotas protegidas são acessíveis apenas com um token válido.
 
-## 📖 Sobre
+O projeto está configurado para ser executado com **Docker**, tanto para o banco de dados MongoDB quanto para a própria API, e inclui um modo de desenvolvimento com hot reload para facilitar a codificação.
 
-Esta API implementa um servidor GraphQL para o Bytebank Pro, onde o front-end está separado em microfrontends (MFEs) com Angular e React. A API é independente, com Docker próprio, podendo ser usada localmente ou em produção.
+-----
 
----
+## 🚀 Bytebank API GraphQL
 
-## 🛠 Tecnologias utilizadas
+Este é o backend do **Bytebank Pro**, uma API GraphQL desenvolvida para suportar uma arquitetura de microfrontends.
 
-* Node.js + TypeScript
-* Apollo Server (versão 4) com Express
-* MongoDB (Mongo Atlas para produção, local para desenvolvimento)
-* Docker para containerização
-* Apollo Sandbox para testes e documentação
+### ✨ Funcionalidades
 
----
+  * **Autenticação de Usuário**: Registro e login seguros com JWT.
+  * **Gerenciamento de Transações**: Operações de CRUD (Criar, Ler, Atualizar, Deletar) para transações financeiras.
+  * **Resumo Financeiro**: Endpoint para obter o saldo atual e um resumo das transações.
+  * **Paginação**: Suporte para paginação na listagem de transações.
+  * **Segurança**: Senhas criptografadas e rotas protegidas por autenticação.
 
-## ⚙️ Configuração do projeto
+### 🛠️ Tecnologias
 
-### Pré-requisitos
+As seguintes tecnologias foram utilizadas na construção desta API:
 
-* Node.js (v22+ recomendado)
-* Docker (para rodar banco e API)
-* MongoDB Atlas (para produção) ou MongoDB local (para desenvolvimento) - É recomendado usar o MongoDB Atlas para produção, mas você pode rodar localmente para desenvolvimento.
+  * **Node.js**
+  * **TypeScript**
+  * **GraphQL** com **Apollo Server**
+  * **Express.js**
+  * **MongoDB** com **Mongoose**
+  * **Docker**
+  * **TypeGraphQL** para a construção de schemas e resolvers
+  * **JWT (JSON Web Token)** para autenticação
+  * **Bcrypt.js** para criptografia de senhas
 
----
+### 📂 Estrutura de Pastas
 
-### Instalação
+A estrutura de pastas do projeto está organizada da seguinte forma:
 
-1. Clone o repositório:
-
-```bash
-git clone git@github.com:Brendhon/bytebank-api.git
-cd bytebank-api
+```
+/
+├── dist/
+├── src/
+│   ├── config/
+│   │   └── index.ts
+│   ├── middleware/
+│   │   └── index.ts
+│   ├── models/
+│   │   └── index.ts
+│   ├── resolvers/
+│   │   └── index.ts
+│   ├── schema/
+│   │   └── index.ts
+│   ├── types/
+│   │   └── index.ts
+│   ├── utils/
+│   │   └── index.ts
+│   └── index.ts
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── nodemon.json
+├── package-lock.json
+├── package.json
+├── vitest.config.ts
+└── tsconfig.json
 ```
 
-2. Instale as dependências:
+-----
+
+### ⚙️ Configuração e Instalação
+
+**Pré-requisitos**:
+
+  * Node.js (versão \>=18.0.0)
+  * Docker
+
+**Passo a passo**:
+
+1.  Clone o repositório:
+
+    ```bash
+    git clone https://github.com/Brendhon/bytebank-api.git
+    ```
+
+2.  Navegue até o diretório do projeto:
+
+    ```bash
+    cd bytebank-api
+    ```
+
+3.  Instale as dependências:
+
+    ```bash
+    npm install
+    ```
+
+4.  Crie um arquivo `.env` na raiz do projeto com base no `.env.example`. Você pode usar o seguinte comando para copiar o arquivo de exemplo:
+
+    ```bash
+    cp .env.example .env
+    ```
+
+    O arquivo `.env` deve conter as seguintes variáveis:
+
+    ```env
+    MONGO_URI=mongodb://localhost:27017/bytebankdb
+    PORT=4000
+    JWT_SECRET=seu_segredo_jwt
+    NODE_ENV=development
+    ```
+
+### ▶️ Executando a Aplicação
+
+**Modo de Desenvolvimento (com Hot Reload):**
+
+Este modo é ideal para o desenvolvimento, pois o servidor reinicia automaticamente a cada alteração no código.
 
 ```bash
-npm install
-```
-
-3. Configure variáveis de ambiente criando um arquivo `.env` com:
-
-```env
-MONGO_URI=mongodb://localhost:27017/bytebankdb
-PORT=4000
-JWT_SECRET=seu_segredo_jwt
-NODE_ENV=development
-```
-
----
-
-### Modos de Execução
-
-#### 1. Desenvolvimento com Hot Reload (Recomendado para desenvolvimento)
-
-Este modo é ideal para desenvolvimento local, oferecendo hot reload e melhor experiência de debugging:
-
-```bash
-# Inicia o MongoDB em container e a API com hot reload
+# Inicia o container do MongoDB e a API
 npm run dev
+```
 
-# Para parar o container do MongoDB quando terminar
+Quando terminar de desenvolver, você pode parar o container do MongoDB com:
+
+```bash
 npm run dev:stop
 ```
 
-Neste modo:
-- O MongoDB roda em um container Docker
-- A API roda diretamente na sua máquina com hot reload
-- Alterações no código são refletidas instantaneamente
-- Ideal para desenvolvimento ativo
-
-#### 2. Execução Completa via Docker
-
-Para executar toda a aplicação em containers Docker:
+**Modo Docker Completo:**
+Este modo executa toda a aplicação em containers Docker, simulando um ambiente de produção.
 
 ```bash
-# Constrói e inicia todos os containers
+# Constrói e inicia os containers
 docker compose up
+```
 
-# Com rebuild (caso tenha alterações na imagem)
+Para forçar a reconstrução das imagens, utilize:
+
+```bash
 docker compose up --build
 ```
 
-**Limitações do modo Docker completo:**
-- Não possui hot reload
-- Alterações no código requerem rebuild da imagem
-- Cache da imagem pode causar problemas se não for feito rebuild
-- Melhor para testes de produção ou CI/CD
+A API estará disponível em `http://localhost:4000/graphql`.
 
-Em ambos os casos, a API estará disponível em `http://localhost:4000/graphql`.
+### 🧰 Principais Scripts Disponíveis
 
-**Quando usar cada modo?**
-- Use `npm run dev` durante o desenvolvimento ativo (coding)
-- Use `docker compose up` para testar o ambiente de produção ou quando precisar da stack completa em containers
+  * `npm run dev`: Inicia a API em modo de desenvolvimento com hot reload.
+  * `npm run dev:stop`: Para o container do MongoDB.
+  * `npm start`: Executa a API em modo de produção (requer compilação prévia).
+  * `npm run build`: Compila o código TypeScript.
+  * `npm run format`: Formata o código com o Prettier.
+  * `npm test`: Executa os testes automatizados.
 
----
+### 📄 Licença
 
-## 📑 Documentação da API
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE.md) para mais detalhes.
 
-Utilizamos **Apollo Sandbox** para facilitar o desenvolvimento e teste.
-
-Para documentação formal, usaremos o Apollo Sandbox e manteremos o schema GraphQL atualizado para autogeração de documentação.
-
----
-
-## 🧰 Scripts disponíveis
-
-| Script              | Descrição                                       |
-| ------------------- | ----------------------------------------------- |
-| `npm run dev`       | Roda API em modo desenvolvimento com hot reload |
-| `npm run dev:stop`  | Para o container do MongoDB em desenvolvimento  |
-| `npm start`         | Roda API em modo produção                       |
-
----
+-----
 
 ## 👥 Autor
 <img style="border-radius: 20%;" src="https://avatars1.githubusercontent.com/u/52840078?s=400&u=67bc81db89b5abf12cf592e0c610426afd3a02f4&v=4" width="120px;" alt="autor"/><br>
@@ -127,10 +166,4 @@ Para documentação formal, usaremos o Apollo Sandbox e manteremos o schema Grap
 
 [![Linkedin Badge](https://img.shields.io/badge/-Brendhon-blue?style=flat-square&logo=Linkedin&logoColor=white&link=https://www.linkedin.com/in/brendhon-moreira)](https://www.linkedin.com/in/brendhon-moreira)
 [![Gmail Badge](https://img.shields.io/badge/-brendhon.e.c.m@gmail.com-c14438?style=flat-square&logo=Gmail&logoColor=white&link=mailto:brendhon.e.c.m@gmail.com)](mailto:brendhon.e.c.m@gmail.com)
----
 
-## 📄 Licença
-
-MIT © Brendhon Eduardo
-
----

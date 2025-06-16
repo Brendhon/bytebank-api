@@ -1,11 +1,11 @@
 import 'reflect-metadata'; // This need to be imported before any other imports that use decorators
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { TransactionResolver } from './transaction.resolver';
-import { TransactionModel } from '../models/Transaction';
-import { TransactionType, TransactionDesc } from '../types/transactions';
+import { TransactionModel } from '../../models/Transaction';
+import { TransactionType, TransactionDesc } from '../../types/transactions';
 import { Types } from 'mongoose';
-import { Context } from '../middleware/isAuth';
-import { Transaction, TransactionInput } from '../schema/transaction-type';
+import { Context } from '../../middleware/isAuth';
+import { Transaction, TransactionInput } from '../../schema/transaction-type';
+import { TransactionResolver } from './transaction.resolver';
 
 // Mock the Transaction model to avoid actual database calls
 vi.mock('../models/Transaction', () => ({

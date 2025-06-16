@@ -1,8 +1,8 @@
 import { Arg, Ctx, ID, Int, Mutation, Query, Resolver, UseMiddleware } from 'type-graphql';
-import { Context, isAuth } from '../middleware';
-import { TransactionModel } from '../models/Transaction';
-import { PaginatedTransactions, Transaction, TransactionInput, TransactionSummary, TransactionUpdateInput } from '../schema/transaction-type';
-import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../types/transactions';
+import { Context, isAuth } from '../../middleware';
+import { TransactionModel } from '../../models/Transaction';
+import { PaginatedTransactions, Transaction, TransactionInput, TransactionSummary, TransactionUpdateInput } from '../../schema/transaction-type';
+import { ITransaction, TransactionDesc, TransactionType as TransactionTypeEnum } from '../../types/transactions';
 
 @Resolver(Transaction)
 export class TransactionResolver {
