@@ -17,6 +17,7 @@ O projeto está configurado para ser executado com **Docker**, tanto para o banc
 - **Resumo Financeiro**: Endpoint para obter o saldo atual e um resumo das transações.
 - **Paginação**: Suporte para paginação na listagem de transações.
 - **Segurança**: Senhas criptografadas e rotas protegidas por autenticação.
+- **CORS Inteligente**: Configuração automática de CORS baseada no ambiente (desenvolvimento vs produção).
 
 ---
 
@@ -113,7 +114,38 @@ A estrutura de pastas do projeto está organizada da seguinte forma:
     PORT=4000
     JWT_SECRET=seu_segredo_jwt
     NODE_ENV=development
+    # Adicione os domínios permitidos separados por vírgula. Caso não forneça, o CORS permitirá todas as origens.
+    ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
     ```
+
+---
+
+## 🛡️ Configuração CORS
+A API implementa uma configuração de CORS (Cross-Origin Resource Sharing) que se adapta automaticamente ao ambiente de execução:
+
+### Desenvolvimento
+- **Permite todas as origens**: Durante o desenvolvimento (`NODE_ENV !== "production"`), o CORS permite requisições de qualquer origem.
+- **Credentials habilitado**: Permite envio de cookies e headers de autorização.
+
+### Produção
+- **Apenas domínios permitidos**: Em produção (`NODE_ENV === "production"`), apenas os domínios listados na variável `ALLOWED_ORIGINS` são aceitos.
+- **CORS aberto se não houver domínios**: Caso a variável `ALLOWED_ORIGINS` não seja fornecida, o CORS permitirá todas as origens, mesmo em produção.
+- **Verificação de origem**: Cada requisição tem sua origem verificada contra a lista de domínios permitidos.
+- **Requisições sem origem**: Permite requisições sem origem (útil para apps mobile e testes com curl).
+
+### Exemplos de configuração:
+
+**Desenvolvimento:**
+```env
+NODE_ENV=development
+# ALLOWED_ORIGINS não é necessário em desenvolvimento
+```
+
+**Produção:**
+```env
+NODE_ENV=production
+ALLOWED_ORIGINS=https://bytebankpro.com,https://www.bytebankpro.com,https://app.bytebankpro.com
+```
 
 ---
 

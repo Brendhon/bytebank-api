@@ -8,6 +8,34 @@ import { buildSchema } from "type-graphql";
 import { connectToDatabase } from "./config";
 import { resolvers } from "./resolvers";
 
+// Configure CORS based on environment
+const getCorsOptions = () => {
+  // In production, only allow specific domains
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(",") || [];
+
+  // If ALLOWED_ORIGINS is not set, it defaults to an empty array
+  if (process.env.NODE_ENV === "production" && allowedOrigins.length > 0) {
+    // Return CORS options for production
+    return {
+      origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+        // Log the origin for debugging purposes
+        console.log("CORS Origin:", origin);
+
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"), false);
+        }
+      },
+      credentials: true, // Allow cookies and authorization headers
+    };
+  } else return { origin: true, credentials: true };
+
+};
+
 /**
  * Starts the Express server with Apollo Server for GraphQL
  */
@@ -37,7 +65,7 @@ const startServer = async () => {
 
     app.use(
       "/graphql", // Define the GraphQL endpoint
-      cors(), // Enable CORS for the endpoint
+      cors(getCorsOptions()), // Enable CORS with environment-specific configuration
       bodyParser.json(), // Parse JSON bodies
       expressMiddleware(server, {
         // Pass the context to resolvers
