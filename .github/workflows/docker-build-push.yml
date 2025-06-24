@@ -22,8 +22,10 @@ jobs:
     
     # Permissões necessárias para o job acessar o repositório e registries
     permissions:
-      contents: read    # Permissão para ler o código do repositório
-      packages: write   # Permissão para escrever no registry de pacotes
+      contents: read      # Permissão para ler o código do repositório
+      packages: write     # Permissão para escrever no registry de pacotes
+      id-token: write     # Permissão para gerar tokens de identidade (necessário para atestados)
+      attestations: write # Permissão para criar atestados de build
     
     steps:
       # Step 1: Baixa o código do repositório para o runner
@@ -72,6 +74,7 @@ jobs:
             
       # Step 6: Builda e faz push da imagem Docker
       - name: Build and push Docker image
+        id: build  # ID para referenciar outputs deste step
         uses: docker/build-push-action@v5  # Action oficial para build e push
         with:
           context: .                    # Contexto do build (diretório raiz)
