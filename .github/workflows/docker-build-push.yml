@@ -30,11 +30,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4  # Action oficial para fazer checkout do código
         
-      # Step 2: Configura o Docker Buildx (builder avançado do Docker)
+      # Step 2: Extrai a versão do package.json
+      - name: Extract version from package.json
+        id: package_version  # ID para referenciar a versão em outros steps
+        run: |
+          # Lê a versão do package.json e define como output
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "📦 Versão detectada: $VERSION"
+        
+      # Step 3: Configura o Docker Buildx (builder avançado do Docker)
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3  # Permite builds multi-platform e cache avançado
         
-      # Step 3: Faz login no Docker Hub (apenas para push, não para PRs)
+      # Step 4: Faz login no Docker Hub (apenas para push, não para PRs)
       - name: Log in to Docker Hub
         if: github.event_name != 'pull_request'  # Condicional: só executa se não for PR
         uses: docker/login-action@v3  # Action oficial para login em registries
@@ -43,25 +52,25 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}  # Username do Docker Hub (secret)
           password: ${{ secrets.DOCKER_TOKEN }}     # Token do Docker Hub (secret)
           
-      # Step 4: Extrai metadados para tags e labels da imagem
+      # Step 5: Extrai metadados para tags e labels da imagem
       - name: Extract metadata
         id: meta  # ID do step para referenciar os outputs em outros steps
         uses: docker/metadata-action@v5  # Action para gerar metadados automaticamente
         with:
           images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
-          # Define diferentes tipos de tags baseados no contexto
+          # Define tags simplificadas: versão limpa e latest
           tags: |
-            type=ref,event=branch      # Tag baseada no nome da branch (ex: main)
-            type=ref,event=pr          # Tag baseada no número do PR (ex: pr-123)
-            type=sha,prefix={{branch}}- # Tag com hash do commit (ex: main-abc1234)
+            type=raw,value=${{ steps.package_version.outputs.version }},enable={{is_default_branch}}   # Tag com versão (ex: 1.0.0)
             type=raw,value=latest,enable={{is_default_branch}}  # Tag 'latest' apenas na branch padrão
           # Labels OCI (Open Container Initiative) para metadados da imagem
           labels: |
             org.opencontainers.image.title=${{ env.IMAGE_NAME }}
             org.opencontainers.image.description=ByteBank API - GraphQL API for banking operations
             org.opencontainers.image.vendor=ByteBank
+            org.opencontainers.image.version=${{ steps.package_version.outputs.version }}
+            org.opencontainers.image.revision=${{ github.sha }}
             
-      # Step 5: Builda e faz push da imagem Docker
+      # Step 6: Builda e faz push da imagem Docker
       - name: Build and push Docker image
         uses: docker/build-push-action@v5  # Action oficial para build e push
         with:
@@ -74,7 +83,7 @@ jobs:
           cache-from: type=gha          # Usa cache do GitHub Actions para acelerar builds
           cache-to: type=gha,mode=max   # Salva cache no GitHub Actions (modo máximo)
           
-      # Step 6: Gera atestado de build para segurança e proveniência
+      # Step 7: Gera atestado de build para segurança e proveniência
       - name: Generate artifact attestation
         if: github.event_name != 'pull_request'  # Só gera atestado para pushes reais
         uses: actions/attest-build-provenance@v1  # Action para gerar atestados de segurança

@@ -1,6 +1,44 @@
 # Docker Hub CI/CD Setup
 
-Este documento explica como configurar a integração contínua para automatizar o build e push da imagem Docker para o Docker Hub.
+Este documento explica como configurar a integração CI/CD para publicar imagens Docker no Docker Hub automaticamente via GitHub Actions.
+
+## Tags Geradas
+
+Na branch `main`, são criadas duas tags:
+- `latest`: Sempre aponta para a versão mais recente em produção
+- `<versão>`: Exemplo `1.2.3`, igual ao campo `version` do `package.json`
+
+**Exemplo:**  
+
+Para `"version": "1.2.3"` no `package.json`:
+
+```
+brendhon/bytebank-api-graphql:latest
+brendhon/bytebank-api-graphql:1.2.3
+```
+
+## Estratégias de Deploy
+
+**Versão específica (recomendado):**
+```bash
+docker pull brendhon/bytebank-api-graphql:1.2.3
+docker run -p 3000:3000 brendhon/bytebank-api-graphql:1.2.3
+```
+
+**Sempre a versão mais recente:**
+```bash
+docker pull brendhon/bytebank-api-graphql:latest
+docker run -p 3000:3000 brendhon/bytebank-api-graphql:latest
+```
+
+**Docker Compose:**
+```yaml
+services:
+  api:
+    image: brendhon/bytebank-api-graphql:1.2.3
+    ports:
+      - "3000:3000"
+```
 
 ## Pré-requisitos
 
@@ -10,118 +48,87 @@ Este documento explica como configurar a integração contínua para automatizar
 
 ## Configuração dos Secrets no GitHub
 
-Para que o GitHub Actions funcione corretamente, você precisa configurar os seguintes secrets no seu repositório:
-
-### 1. Acessar as configurações do repositório
-- Vá para o seu repositório no GitHub
-- Clique em **Settings** (Configurações)
-- No menu lateral, clique em **Secrets and variables** > **Actions**
-
-### 2. Adicionar os secrets necessários
-
-#### DOCKER_USERNAME
-- Clique em **New repository secret**
-- Nome: `DOCKER_USERNAME`
-- Valor: Seu nome de usuário do Docker Hub
-
-#### DOCKER_TOKEN
-- No Docker Hub, vá em **Account Settings** > **Security** > **New Access Token**
-- Crie um token com permissões de **Read, Write, Delete**
-- Copie o token gerado
-- No GitHub, clique em **New repository secret**
-- Nome: `DOCKER_TOKEN`
-- Valor: O token gerado do Docker Hub
+1. No repositório, acesse **Settings > Secrets and variables > Actions**
+2. Adicione:
+   - `DOCKER_USERNAME`: Seu usuário Docker Hub
+   - `DOCKER_TOKEN`: Token gerado no Docker Hub com permissão de leitura, escrita e deleção
 
 ## Como funciona o Workflow
 
-O workflow será executado automaticamente quando:
+- **Push na branch main:** Builda e faz push da imagem para o Docker Hub
+- **Pull Request:** Apenas builda para validação (sem push)
 
-1. **Push para a branch main**: Builda e faz push da imagem para o Docker Hub
-2. **Pull Request**: Apenas builda a imagem para validação (sem push)
+## Atualizando a Versão
 
-## Tags da Imagem
+1. Atualize o campo `version` no `package.json` ou use:
+   ```bash
+   npm version patch|minor|major
+   ```
+2. Faça commit e push para `main`:
+   ```bash
+   git push origin main --follow-tags
+   ```
+3. O workflow criará as tags `latest` e a versão correspondente
 
-O workflow gera automaticamente as seguintes tags:
+## Funcionalidades do Workflow
 
-- `latest`: Para commits na branch main
-- `main-<sha>`: Para commits específicos na main
-- `pr-<numero>`: Para pull requests
+- Build multi-arquitetura (AMD64 e ARM64)
+- Cache de build para acelerar execuções
+- Geração automática de labels e tags
+- Uso de tokens para segurança
+- Build attestation para rastreabilidade
+- Push condicional (testa PRs sem publicar)
+- Apenas 2 tags essenciais: versão e latest
 
-## Recursos do Workflow
+## Otimizações do Dockerfile
 
-### ✅ Funcionalidades Implementadas
+- Multi-stage build para imagens menores
+- Executa como usuário não-root (`apiuser`)
+- Instala só dependências de produção
+- Health check configurado
+- Otimização de camadas e ownership dos arquivos
 
-- **Multi-architecture build**: Suporte para AMD64 e ARM64
-- **Cache inteligente**: Usa GitHub Actions cache para acelerar builds
-- **Metadata extraction**: Gera labels e tags automaticamente
-- **Security**: Usa tokens em vez de senhas
-- **Build attestation**: Gera atestados de build para segurança
-- **Conditional push**: Só faz push em merges, não em PRs
-
-### 🐳 Otimizações do Dockerfile
-
-- **Multi-stage build**: Reduz o tamanho final da imagem separando build e runtime
-- **Non-root user**: Executa com usuário não-root (`apiuser`) para segurança
-- **Production dependencies**: Instala apenas dependências de produção na imagem final
-- **Health check**: Verifica se o container está saudável
-- **Layer optimization**: Organiza comandos para melhor aproveitamento do cache do Docker
-- **File ownership**: Define proprietário correto dos arquivos para o usuário não-root
-
-## Testando localmente
+## Testando Localmente
 
 ```bash
-# Build da imagem
+# Build local
+npm run docker:build
+# ou
 docker build -t bytebank-api .
 
-# Executar o container
-docker run -p 3000:3000 bytebank-api
+# Executar localmente
+npm run docker:run
+# ou
+docker run -p 3000:3000 --env-file .env bytebank-api
+
+# Testar imagem do Docker Hub
+docker pull brendhon/bytebank-api-graphql:latest
+docker run -p 3000:3000 brendhon/bytebank-api-graphql:latest
+
+# Testar versão específica
+docker pull brendhon/bytebank-api-graphql:1.0.0
+docker run -p 3000:3000 brendhon/bytebank-api-graphql:1.0.0
 
 # Verificar health check
 docker inspect --format='{{.State.Health.Status}}' <container-id>
+
+# Testar build TypeScript (sem Docker)
+npm run build:check
 ```
 
-## Configuração de Segurança
+## Segurança
 
-### 🔒 Usuário Não-Root
-
-O Dockerfile foi configurado para executar a aplicação com um usuário não-root chamado `apiuser`. Isso é uma prática de segurança essencial porque:
-
-1. **Princípio do menor privilégio**: A aplicação executa apenas com as permissões necessárias
-2. **Redução de superfície de ataque**: Mesmo se a aplicação for comprometida, o atacante não terá privilégios de root
-3. **Conformidade com padrões**: Segue as melhores práticas de segurança em containers
-
-**Por que `apiuser` e não `nextjs`?**
-- O nome `nextjs` foi usado por engano na versão inicial (era um template de Next.js)
-- Para uma API GraphQL, `apiuser` é mais semântico e apropriado
-- O nome do usuário não afeta a funcionalidade, apenas a clareza do código
+- O container roda como usuário não-root (`apiuser`) para reduzir riscos e seguir boas práticas.
 
 ## Troubleshooting
 
-### Erro de autenticação no Docker Hub
-- Verifique se os secrets `DOCKER_USERNAME` e `DOCKER_TOKEN` estão configurados corretamente
-- Certifique-se de que o token tem as permissões necessárias
-
-### Build falhando
-- Verifique se o comando `npm run build` funciona localmente
-- Confirme se todas as dependências estão listadas no `package.json`
-
-### Imagem muito grande
-- Revise o `.dockerignore` para excluir arquivos desnecessários
-- Considere usar uma imagem base menor se possível
+- **Erro de autenticação:** Verifique os secrets `DOCKER_USERNAME` e `DOCKER_TOKEN`
+- **Build falhando:** Confirme se `npm run build` funciona localmente e dependências estão corretas
+- **Imagem grande:** Revise `.dockerignore` e considere imagens base menores
 
 ## Monitoramento
 
-Após o setup, você pode:
+- Acompanhe builds em **Actions** no GitHub
+- Verifique imagens no Docker Hub
+- Use as tags geradas nos seus deployments
 
-1. Monitorar os builds na aba **Actions** do GitHub
-2. Verificar as imagens no Docker Hub
-3. Usar as tags geradas em seus deployments
-
-## Próximos Passos
-
-Considere implementar:
-
-- **Vulnerability scanning**: Adicionar scan de segurança nas imagens
-- **Notification**: Notificações no Slack/Discord para builds
-- **Deployment**: Automatizar deploy em staging/production
-- **Testing**: Executar testes antes do build
