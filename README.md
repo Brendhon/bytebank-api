@@ -184,6 +184,32 @@ A API estará disponível em `http://localhost:4000/graphql`.
 
 ---
 
+## 🐳 CI/CD e Imagens Docker
+
+Este projeto possui **integração contínua** configurada com **GitHub Actions**. Sempre que há um merge na branch `main`, é automaticamente:
+
+- 🔨 **Buildada** uma nova imagem Docker
+- 🏷️ **Criadas** tags baseadas na versão do `package.json`
+- 📦 **Publicada** no Docker Hub como `brendhon/bytebank-api-graphql`
+
+### Imagens Disponíveis
+
+Você pode usar as imagens publicadas diretamente:
+
+```bash
+# Versão específica (recomendado)
+docker pull brendhon/bytebank-api-graphql:1.0.0
+docker run -p 4000:4000 brendhon/bytebank-api-graphql:1.0.0
+
+# Sempre a versão mais recente
+docker pull brendhon/bytebank-api-graphql:latest
+docker run -p 4000:4000 brendhon/bytebank-api-graphql:latest
+```
+
+📖 **Para mais detalhes sobre configuração de CI/CD, troubleshooting e estratégias de deploy, consulte:** [**docs/DOCKER_CI_CD.md**](docs/DOCKER_CI_CD.md)
+
+---
+
 ## 🧰 Principais Scripts Disponíveis
 
 - `npm run dev`: Inicia a API em modo de desenvolvimento com hot reload.

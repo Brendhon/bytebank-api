@@ -58,6 +58,50 @@ services:
 - **Push na branch main:** Builda e faz push da imagem para o Docker Hub
 - **Pull Request:** Apenas builda para validação (sem push)
 
+### 📋 **Detalhamento dos Steps**
+
+O workflow executa os seguintes passos em sequência:
+
+#### **Step 1: Checkout repository**
+- **O que faz:** Baixa o código do repositório para o runner do GitHub Actions
+- **Por que:** Necessário para acessar o código fonte, Dockerfile e package.json
+- **Action usado:** `actions/checkout@v4`
+
+#### **Step 2: Extract version from package.json**
+- **O que faz:** Lê a versão do `package.json` e a disponibiliza para outros steps
+- **Por que:** Permite usar a versão do projeto como tag da imagem Docker
+- **Comando:** `node -p "require('./package.json').version"`
+
+#### **Step 3: Set up Docker Buildx**
+- **O que faz:** Configura o Docker Buildx (builder avançado do Docker)
+- **Por que:** Permite builds multi-arquitetura (AMD64 + ARM64) e cache avançado
+- **Action usado:** `docker/setup-buildx-action@v3`
+
+#### **Step 4: Log in to Docker Hub**
+- **O que faz:** Autentica no Docker Hub usando secrets configurados
+- **Por que:** Necessário para fazer push das imagens para o registry
+- **Condicional:** Só executa se não for Pull Request
+- **Action usado:** `docker/login-action@v3`
+
+#### **Step 5: Extract metadata**
+- **O que faz:** Gera automaticamente tags e labels para a imagem Docker
+- **Por que:** Padroniza metadados e cria tags baseadas na versão do package.json
+- **Tags geradas:** `latest` e versão (ex: `1.0.0`)
+- **Action usado:** `docker/metadata-action@v5`
+
+#### **Step 6: Build and push Docker image**
+- **O que faz:** Builda a imagem Docker e faz push para o Docker Hub
+- **Por que:** Cria e publica a imagem final que será usada em produção
+- **Recursos:** Multi-arquitetura, cache do GitHub Actions, labels OCI
+- **Action usado:** `docker/build-push-action@v5`
+
+#### **Step 7: Generate artifact attestation**
+- **O que faz:** Gera atestados de build para segurança e proveniência
+- **Por que:** Prova que a imagem foi buildada pelo repositório específico
+- **Benefícios:** Rastreabilidade, integridade, compliance de segurança
+- **Condicional:** Só executa para pushes reais (não PRs)
+- **Action usado:** `actions/attest-build-provenance@v1`
+
 ## Atualizando a Versão
 
 1. Atualize o campo `version` no `package.json` ou use:
@@ -122,9 +166,28 @@ npm run build:check
 
 ## Troubleshooting
 
+### 🔧 **Problemas Comuns**
+
 - **Erro de autenticação:** Verifique os secrets `DOCKER_USERNAME` e `DOCKER_TOKEN`
 - **Build falhando:** Confirme se `npm run build` funciona localmente e dependências estão corretas
 - **Imagem grande:** Revise `.dockerignore` e considere imagens base menores
+
+### ⚠️ **Erro de Build Attestation**
+
+Se você encontrar o erro `Unable to get ACTIONS_ID_TOKEN_REQUEST_URL` no Step 7:
+
+**Causa:** Falta de permissões para gerar atestados de build
+
+**Solução:** Adicione as permissões necessárias no workflow:
+```yaml
+permissions:
+  contents: read
+  packages: write
+  id-token: write     # Para tokens de identidade
+  attestations: write # Para criar atestados
+```
+
+**Alternativa:** Se o problema persistir, você pode remover o Step 7 completamente - ele é opcional e não afeta a funcionalidade principal do workflow.
 
 ## Monitoramento
 
