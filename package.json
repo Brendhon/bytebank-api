@@ -4,9 +4,10 @@
   "description": "GraphQL API for Bytebank Pro (Apollo v4 + Express + MongoDB)",
   "main": "src/index.ts",
   "scripts": {
-    "dev": "docker-compose up -d mongo && nodemon",
-    "dev:stop": "docker-compose stop",
+    "dev": "docker compose up -d mongo && nodemon",
+    "dev:stop": "docker compose down",
     "start": "npm run build && node dist/index.js",
+    "start:prod": "NODE_ENV=production node dist/index.js",
     "build": "tsc",
     "format": "prettier --write .",
     "test": "vitest run"

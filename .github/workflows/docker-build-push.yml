@@ -1,0 +1,84 @@
+# Nome do workflow que aparece na aba Actions do GitHub
+name: Build and Push Docker Image
+
+# Define quando o workflow será executado
+on:
+  push:
+    branches:
+      - main  # Executa quando há push na branch main (para deploy)
+  pull_request:
+    branches:
+      - main  # Executa quando há PR para main (apenas para validação)
+
+# Variáveis de ambiente globais usadas em todo o workflow
+env:
+  REGISTRY: docker.io  # Mantém docker.io (registry padrão do Docker Hub)
+  IMAGE_NAME: bytebank-api-graphql  # Nome da sua imagem (sem o username)
+
+jobs:
+  build-and-push:
+    # Executa o job em uma máquina virtual Ubuntu mais recente
+    runs-on: ubuntu-latest
+    
+    # Permissões necessárias para o job acessar o repositório e registries
+    permissions:
+      contents: read    # Permissão para ler o código do repositório
+      packages: write   # Permissão para escrever no registry de pacotes
+    
+    steps:
+      # Step 1: Baixa o código do repositório para o runner
+      - name: Checkout repository
+        uses: actions/checkout@v4  # Action oficial para fazer checkout do código
+        
+      # Step 2: Configura o Docker Buildx (builder avançado do Docker)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3  # Permite builds multi-platform e cache avançado
+        
+      # Step 3: Faz login no Docker Hub (apenas para push, não para PRs)
+      - name: Log in to Docker Hub
+        if: github.event_name != 'pull_request'  # Condicional: só executa se não for PR
+        uses: docker/login-action@v3  # Action oficial para login em registries
+        with:
+          registry: ${{ env.REGISTRY }}  # Usa a variável REGISTRY definida no env
+          username: ${{ secrets.DOCKER_USERNAME }}  # Username do Docker Hub (secret)
+          password: ${{ secrets.DOCKER_TOKEN }}     # Token do Docker Hub (secret)
+          
+      # Step 4: Extrai metadados para tags e labels da imagem
+      - name: Extract metadata
+        id: meta  # ID do step para referenciar os outputs em outros steps
+        uses: docker/metadata-action@v5  # Action para gerar metadados automaticamente
+        with:
+          images: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          # Define diferentes tipos de tags baseados no contexto
+          tags: |
+            type=ref,event=branch      # Tag baseada no nome da branch (ex: main)
+            type=ref,event=pr          # Tag baseada no número do PR (ex: pr-123)
+            type=sha,prefix={{branch}}- # Tag com hash do commit (ex: main-abc1234)
+            type=raw,value=latest,enable={{is_default_branch}}  # Tag 'latest' apenas na branch padrão
+          # Labels OCI (Open Container Initiative) para metadados da imagem
+          labels: |
+            org.opencontainers.image.title=${{ env.IMAGE_NAME }}
+            org.opencontainers.image.description=ByteBank API - GraphQL API for banking operations
+            org.opencontainers.image.vendor=ByteBank
+            
+      # Step 5: Builda e faz push da imagem Docker
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5  # Action oficial para build e push
+        with:
+          context: .                    # Contexto do build (diretório raiz)
+          file: ./Dockerfile           # Localização do Dockerfile
+          platforms: linux/amd64,linux/arm64  # Arquiteturas suportadas (Intel/AMD e ARM)
+          push: ${{ github.event_name != 'pull_request' }}  # Só faz push se não for PR
+          tags: ${{ steps.meta.outputs.tags }}      # Tags geradas no step anterior
+          labels: ${{ steps.meta.outputs.labels }}  # Labels geradas no step anterior
+          cache-from: type=gha          # Usa cache do GitHub Actions para acelerar builds
+          cache-to: type=gha,mode=max   # Salva cache no GitHub Actions (modo máximo)
+          
+      # Step 6: Gera atestado de build para segurança e proveniência
+      - name: Generate artifact attestation
+        if: github.event_name != 'pull_request'  # Só gera atestado para pushes reais
+        uses: actions/attest-build-provenance@v1  # Action para gerar atestados de segurança
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+          subject-digest: ${{ steps.build.outputs.digest }}  # Hash da imagem buildada
+          push-to-registry: true        # Envia o atestado para o registry junto com a imagem
