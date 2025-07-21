@@ -8,6 +8,7 @@ import {
   Resolver,
   UseMiddleware,
 } from "type-graphql";
+import { Types } from "mongoose";
 import { Context, isAuth } from "../../middleware";
 import { TransactionModel } from "../../models/Transaction";
 import {
@@ -50,17 +51,79 @@ export class TransactionResolver {
       const validLimit = Math.max(1, Math.min(50, limit)); // Max 50 items per page
       const skip = (validPage - 1) * validLimit;
 
+      // Convert user._id string to ObjectId for proper matching
+      const userObjectId = new Types.ObjectId(user?._id);
+
       // Get total count of transactions for this user
-      const total = await TransactionModel.countDocuments({ user: user?._id });
+      const total = await TransactionModel.countDocuments({ user: userObjectId });
 
       // Calculate total pages
       const totalPages = Math.ceil(total / validLimit);
 
-      // Get paginated transactions
-      const transactions = await TransactionModel.find({ user: user?._id })
-        .sort({ date: -1 })
-        .skip(skip)
-        .limit(validLimit);
+      console.log(`🔍 Fetching transactions for user: ${user?._id}`);
+      console.log(`📊 Total transactions found: ${total}`);
+
+      // Try the aggregation approach with better error handling
+      let transactions;
+      try {
+        transactions = await TransactionModel.aggregate([
+          // Match documents for the specific user (using ObjectId)
+          { $match: { user: userObjectId } },
+          // Add a field to convert date string (DD/MM/YYYY) to a numeric value (YYYYMMDD)
+          {
+            $addFields: {
+              dateAsNumber: {
+                // Use conditional logic to handle potential conversion errors
+                $cond: {
+                  if: {
+                    $and: [
+                      { $gte: [{ $strLenCP: "$date" }, 10] }, // Check if string is at least 10 chars
+                      { $eq: [{ $substr: ["$date", 2, 1] }, "/"] }, // Check if 3rd char is "/"
+                      { $eq: [{ $substr: ["$date", 5, 1] }, "/"] }, // Check if 6th char is "/"
+                    ],
+                  },
+                  then: {
+                    $add: [
+                      // Year * 10000 (e.g., 2025 * 10000 = 20250000)
+                      {
+                        $multiply: [
+                          { $toInt: { $substr: ["$date", 6, 4] } }, // Year (YYYY)
+                          10000,
+                        ],
+                      },
+                      // Month * 100 (e.g., 04 * 100 = 400)
+                      {
+                        $multiply: [
+                          { $toInt: { $substr: ["$date", 3, 2] } }, // Month (MM)
+                          100,
+                        ],
+                      },
+                      // Day (e.g., 20)
+                      { $toInt: { $substr: ["$date", 0, 2] } }, // Day (DD)
+                    ],
+                  },
+                  else: 0, // Default value if date format is invalid
+                },
+              },
+            },
+          },
+          // Sort by the numeric date field in descending order (newest first)
+          { $sort: { dateAsNumber: -1 } },
+          // Apply pagination
+          { $skip: skip },
+          { $limit: validLimit },
+        ]);
+
+        console.log(`✅ Aggregation successful, found ${transactions.length} transactions`);
+      } catch (aggregationError: any) {
+        console.error("⚠️ Aggregation failed, falling back to simple query:", aggregationError.message);
+        
+        // Fallback to simple find with basic sort
+        transactions = await TransactionModel.find({ user: userObjectId })
+          .sort({ _id: -1 }) // Sort by _id as fallback (ObjectId contains timestamp)
+          .skip(skip)
+          .limit(validLimit);
+      }
 
       return {
         items: transactions.map((t) => this.convertToGraphQLType(t)),
@@ -71,6 +134,7 @@ export class TransactionResolver {
         hasMore: validPage < totalPages,
       };
     } catch (error: any) {
+      console.error("❌ Transaction query failed:", error.message);
       throw new Error(`Failed to fetch transactions: ${error.message}`);
     }
   }

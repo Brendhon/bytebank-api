@@ -69,7 +69,7 @@ describe("TransactionResolver", () => {
       expect(result.totalPages).toBe(1);
       expect(result.hasMore).toBe(false);
       expect(TransactionModel.find).toHaveBeenCalledWith({
-        user: userId.toString(),
+        user: new Types.ObjectId(userId.toString()),
       });
     });
   });
