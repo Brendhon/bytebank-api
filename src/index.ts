@@ -21,14 +21,11 @@ const getCorsOptions = () => {
         // Log the origin for debugging purposes
         console.log("CORS Origin:", origin);
 
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+        // Allow requests only from allowed origins
+        origin && allowedOrigins.includes(origin)
+          ? callback(null, true)
+          : callback(new Error("Not allowed by CORS"), false);
 
-        if (allowedOrigins.includes(origin)) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"), false);
-        }
       },
       credentials: true, // Allow cookies and authorization headers
     };
