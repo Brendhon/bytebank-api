@@ -25,7 +25,7 @@ const getCorsOptions = () => {
         console.log(`🔍 CORS Origin: ${origin} - Is allowed: ${isAllowed}`);
 
         // Allow requests only from allowed origins
-        callback(null, isAllowed);
+        isAllowed ? callback(null, true) : callback(Error("Not allowed by CORS"), false);
       },
       credentials: true, // Allow cookies and authorization headers
     };
