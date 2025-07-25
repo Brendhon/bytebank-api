@@ -18,14 +18,14 @@ const getCorsOptions = () => {
     // Return CORS options for production
     return {
       origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
-        // Log the origin for debugging purposes
-        console.log("CORS Origin:", origin);
+        // Check if the origin is allowed
+        const isAllowed = !!(origin && allowedOrigins.includes(origin));
+
+        // Log the result for debugging purposes
+        console.log(`🔍 CORS Origin: ${origin} - Is allowed: ${isAllowed}`);
 
         // Allow requests only from allowed origins
-        origin && allowedOrigins.includes(origin)
-          ? callback(null, true)
-          : callback(new Error("Not allowed by CORS"), false);
-
+        callback(null, isAllowed);
       },
       credentials: true, // Allow cookies and authorization headers
     };
